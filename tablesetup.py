@@ -18,7 +18,7 @@ class User(db.Model):
     fname = db.Column(db.String(50), nullable=False)
     lname = db.Column(db.String(50), nullable=False)
     date_created = db.Column(db.DateTime, nullable=False)
-    is_active = db.Column(db.Boolean, default=True)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
 
     def __repr__(self):
         """display user objects nicely, for debugging"""
@@ -33,8 +33,8 @@ class Foodstuff(db.Model):
     pantry_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     name = db.Column(db.String(50), nullable=False)
-    is_shopping = db.Column(db.Boolean, default=False)
-    is_pantry = db.Column(db.Boolean, default=True)
+    is_shopping = db.Column(db.Boolean, default=False, nullable=False)
+    is_pantry = db.Column(db.Boolean, default=True, nullable=False)
     last_purch = db.Column(db.DateTime, nullable=False)
     first_add = db.Column(db.DateTime, nullable=False)
     location_id = db.Column(db.Integer, db.ForeignKey('locations.location_id'))
