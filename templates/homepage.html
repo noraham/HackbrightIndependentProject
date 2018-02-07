@@ -3,7 +3,28 @@
 {% block title %}Remote Pantry Log in{% endblock %}
 
 {% block content %}
+<h3>Returning user? Log in below. New user? <a href="/register">Click here</a></h3>
 
-Log in form, render_template pantry, plus link to registration page.
 
+<form action="login_handle" method="POST">
+
+  <div>
+    <label>
+      Email
+      <input type="email" name="email">
+    </label>
+  </div>
+
+  <div>
+    <label>
+      Password
+      <input type="password" name="password">
+    </label>
+  </div>
+
+  <div>
+    <input type="submit" value="Login">
+  </div>
+
+</form>
 {% endblock %}

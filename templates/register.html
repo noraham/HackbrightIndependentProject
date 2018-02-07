@@ -3,7 +3,42 @@
 {% block title %}Remote Pantry Register{% endblock %}
 
 {% block content %}
+<h1>Hi New User!</h1>
+<h3>Would you like to register a new remote pantry?</h3>
 
-Registration form, redirect to add page.
+<form action="register_handle" method="POST">
 
+  <div>
+    <label>
+      Email
+      <input type="email" name="email">
+    </label>
+  </div>
+
+  <div>
+    <label>
+      Password
+      <input type="password" name="password">
+    </label>
+  </div>
+
+  <div>
+    <label>
+      First name
+      <input type="text" name="fname">
+    </label>
+  </div>
+
+  <div>
+    <label>
+      Last Name
+      <input type="text" name="lname">
+    </label>
+  </div>
+
+  <div>
+    <input type="submit" value="Register">
+  </div>
+
+</form>
 {% endblock %}

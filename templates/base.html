@@ -5,9 +5,22 @@
 </head>
 
 <body>
-  <div>NAVBAR</div>
+  <div>COMING SOON: NAVBAR!    
+    {% if "user_id" in session %}
+        <a href="/logout">Logout</a>
+    {% else %}
+        <a href="/">Login</a>
+    {% endif %}</div>
+
+    {% for flash in get_flashed_messages() %}
+        {{ flash }}
+    {% endfor %}
 
   {% block content %}CONTENT{% endblock %}
+
+  <br>
+  <br>
+  <hr>
   <footer>Remote Pantry 2018</footer>
 
 </body>

@@ -1,20 +1,21 @@
 """local server for Remote Pantry"""
 
-from jinja2 import StrictUndefined
+import datetime
+import bcrypt
 
+from jinja2 import StrictUndefined
 from flask import (Flask, render_template, redirect, request, flash, session)
 from flask_debugtoolbar import DebugToolbarExtension
-
 from tablesetup import User, Foodstuff, Location, Barcode, connect_to_db, db
 
 
 app = Flask(__name__)
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 # Required to use Flask sessions and the debug toolbar
 app.secret_key = "secretSECRETsecret"
 
-# Normally, if you use an undefined variable in Jinja2, it fails silently.
-# This is horrible. Fix this so that, instead, it raises an error.
+# Using an undefined variable in Jinja2 raises an error
 app.jinja_env.undefined = StrictUndefined
 
 
@@ -24,11 +25,70 @@ def Log_in_form_display():
 
     return render_template("homepage.html")
 
+@app.route('/login_handle', methods=["POST"])
+def log_in_handle():
+    """Log user into profile"""
+
+    # Get form variables
+    email = request.form["email"]
+    pword_input = request.form["password"]
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        flash("No such user")
+        return redirect("/")
+
+    # Transform and check
+    pword_in_table = user.pword
+    valid_password = (bcrypt.hashpw(pword_input.encode('utf8'), pword_in_table.encode('utf8'))
+                     == pword_in_table)
+
+    if valid_password:
+        session["user_id"] = user.user_id
+        flash("Logged in")
+        return redirect('/pantry')
+
+    else:
+        flash("Incorrect password")
+        return redirect("/")
+
+@app.route('/logout')
+def logout():
+    """Log out of site"""
+
+    del session["user_id"]
+    flash("Logged out")
+    return redirect("/")
+
 @app.route('/register')
 def newuser_form_display():
     """Register page"""
 
     return render_template("register.html")
+
+@app.route('/register_handle', methods=["POST"])
+def newuser_form_handle():
+    """Add new user to db"""
+
+    # Grab from form
+    email = request.form.get("email")
+    password = request.form.get("password")
+    fname = request.form.get("fname")
+    lname = request.form.get("lname")
+
+    # Transform and auto-create
+    password = password.encode('utf8')
+    hashed_pword = bcrypt.hashpw(password, bcrypt.gensalt(10))
+    now = datetime.datetime.now()
+
+    new_user = User(email=email, pword=hashed_pword, fname=fname, lname=lname,
+                    date_created=now)
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    flash("Successfully registered")
+    return redirect('/add')
 
 @app.route('/add')
 def foodstuff_form_display():
