@@ -1,6 +1,7 @@
 """Models and database functions for Remote Pantry"""
 
 from flask_sqlalchemy import SQLAlchemy
+import bcrypt
 # Connection to PosgreSQL database
 db = SQLAlchemy()
 
@@ -14,7 +15,7 @@ class User(db.Model):
 
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     email = db.Column(db.String(50), nullable=False, unique=True)
-    pword = db.Column(db.String(50), nullable=False)
+    pword = db.Column(db.String(150), nullable=False)
     fname = db.Column(db.String(50), nullable=False)
     lname = db.Column(db.String(50), nullable=False)
     date_created = db.Column(db.DateTime, nullable=False)
@@ -40,7 +41,8 @@ class Foodstuff(db.Model):
     location_id = db.Column(db.Integer, db.ForeignKey('locations.location_id'))
     exp = db.Column(db.DateTime, nullable=True)
     description = db.Column(db.String(300), nullable=True)
-    barcode_id = db.Column(db.Integer, db.ForeignKey('barcodes.barcode_id'))
+    barcode_id = db.Column(db.Integer, db.ForeignKey('barcodes.barcode_id'),
+                           nullable=True)
 
     user = db.relationship('User', backref=db.backref("foodstuffs"))
     location = db.relationship('Location', backref=db.backref("locations"))
