@@ -1,6 +1,6 @@
 """local server for Remote Pantry"""
 
-import datetime
+from datetime import datetime
 import bcrypt
 
 from jinja2 import StrictUndefined
@@ -79,10 +79,8 @@ def newuser_form_handle():
     # Transform and auto-create
     password = password.encode('utf8')
     hashed_pword = bcrypt.hashpw(password, bcrypt.gensalt(10))
-    now = datetime.datetime.now()
 
-    new_user = User(email=email, pword=hashed_pword, fname=fname, lname=lname,
-                    date_created=now)
+    new_user = User(email=email, pword=hashed_pword, fname=fname, lname=lname)
 
     db.session.add(new_user)
     db.session.commit()
@@ -113,24 +111,29 @@ def add_foodstuff():
     if is_shopping == None:
         is_shopping = False
     current_user = session["user_id"]
-    now = datetime.datetime.now()
+    location = int(location)
 
-    # For debug
-    # print current_user
-    # print name
+    # # For debug
+    # print current_user, type(current_user)
+    # print name, type(name)
     # print is_pantry, is_shopping
-    # print now
-    # print location
-    # print exp
+    # print location, type(location)
+    # print exp, type(exp)
 
-    new_item = Foodstuff(user_id=current_user, name=name, is_pantry=is_pantry,
-                         is_shopping=is_shopping, last_purch=now, first_add=now,
-                         location=location, exp=exp)
+    if exp:
+        exp = int(exp)
+        new_item = Foodstuff(user_id=current_user, name=name, is_pantry=is_pantry,
+                         is_shopping=is_shopping, location_id=location, exp=exp)
+        db.session.add(new_item)
+    else:
+        exp = None
+        new_item = Foodstuff(user_id=current_user, name=name, is_pantry=is_pantry,
+                         is_shopping=is_shopping, location_id=location, exp=exp)
+        db.session.add(new_item)
+    
+    db.session.commit()
 
-    # db.session.add(new_item)
-    # db.session.commit()
-
-    # flash("Successfully added")
+    flash("Successfully added")
     return redirect('/add')
 
 @app.route('/pantry')

@@ -2,6 +2,7 @@
 
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
+from datetime import datetime
 # Connection to PosgreSQL database
 db = SQLAlchemy()
 
@@ -18,7 +19,7 @@ class User(db.Model):
     pword = db.Column(db.String(150), nullable=False)
     fname = db.Column(db.String(50), nullable=False)
     lname = db.Column(db.String(50), nullable=False)
-    date_created = db.Column(db.DateTime, nullable=False)
+    date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
 
     def __repr__(self):
@@ -36,10 +37,10 @@ class Foodstuff(db.Model):
     name = db.Column(db.String(50), nullable=False)
     is_shopping = db.Column(db.Boolean, default=False, nullable=False)
     is_pantry = db.Column(db.Boolean, default=True, nullable=False)
-    last_purch = db.Column(db.DateTime, nullable=False)
-    first_add = db.Column(db.DateTime, nullable=False)
+    last_purch = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    first_add = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     location_id = db.Column(db.Integer, db.ForeignKey('locations.location_id'))
-    exp = db.Column(db.DateTime, nullable=True)
+    exp = db.Column(db.Integer, nullable=True)
     description = db.Column(db.String(300), nullable=True)
     barcode_id = db.Column(db.Integer, db.ForeignKey('barcodes.barcode_id'),
                            nullable=True)
