@@ -96,6 +96,43 @@ def foodstuff_form_display():
 
     return render_template("add.html")
 
+@app.route('/add_item', methods=["POST"])
+def add_foodstuff():
+    """add a new foodstuff"""
+
+    # Grab from form
+    is_pantry = request.form.get("pantry")
+    is_shopping = request.form.get("shop")
+    name = request.form.get("name")
+    location = request.form.get("location")
+    exp = request.form.get("exp")
+
+    #Transform and auto-create
+    if is_pantry == None:
+        is_pantry = False
+    if is_shopping == None:
+        is_shopping = False
+    current_user = session["user_id"]
+    now = datetime.datetime.now()
+
+    # For debug
+    # print current_user
+    # print name
+    # print is_pantry, is_shopping
+    # print now
+    # print location
+    # print exp
+
+    new_item = Foodstuff(user_id=current_user, name=name, is_pantry=is_pantry,
+                         is_shopping=is_shopping, last_purch=now, first_add=now,
+                         location=location, exp=exp)
+
+    # db.session.add(new_item)
+    # db.session.commit()
+
+    # flash("Successfully added")
+    return redirect('/add')
+
 @app.route('/pantry')
 def pantry_display():
     """Display pantry from database"""

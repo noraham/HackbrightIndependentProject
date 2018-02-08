@@ -3,5 +3,34 @@
 {% block content %}
 
 Add form for foodstuffs, redirects to same page (reloaded blank).
+<h3>Add a new item to the pantry:</h3>
+
+<form action="add_item" method="POST">
+    <label>Add to pantry-><input type="checkbox" name="pantry" value="True" checked></label>
+    <label>Add to shopping list-><input type="checkbox" name="shop" value="True"></label>
+    
+    <br>
+
+    <div>
+        Name <input type="text" name="name">
+        <button type="button" onclick="alert('oops not built yet!')">Barcode</button>
+    </div>
+
+    <div>
+        Location:
+        <label><input type="radio" name="location" value="1">Fridge</label>
+        <label><input type="radio" name="location" value="2">Freezer</label>
+        <label><input type="radio" name="location" value="3">Shelf</label>
+        <label><input type="radio" name="location" value="4">Nope</label>
+    </div>
+
+    <div>
+        Expires in <input type="number" name="exp"> days
+    </div>
+
+    <br>
+
+    <input type="submit" value="submit">
+</form>
 
 {% endblock %}
