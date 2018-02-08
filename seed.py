@@ -20,8 +20,6 @@ def load_users(user_file):
         time = datetime.datetime.now()
         hashed_pword = bcrypt.hashpw(pword, bcrypt.gensalt(10))
 
-        # validPassword = bcrypt.hashpw(pword_input, pword_in_table.encode('utf8')) == pword_in_table
-
         user = User(email=email, pword=hashed_pword, fname=fname, lname=lname,
                     date_created=time)
 

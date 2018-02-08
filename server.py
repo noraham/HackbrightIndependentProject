@@ -101,8 +101,38 @@ def pantry_display():
     """Display pantry from database"""
 
     # query foodstuffs by user_id and location_id, pass to template
+    # Is there a non-hardcoded way to do this?
+    current_user = session["user_id"]
+    fridge = Foodstuff.query.filter_by(user_id=current_user, location_id=1,
+                                       is_pantry=True).all()
+    freezer = Foodstuff.query.filter_by(user_id=current_user, location_id=2,
+                                        is_pantry=True).all()
+    shelf = Foodstuff.query.filter_by(user_id=current_user, location_id=3,
+                                      is_pantry=True).all()
+    nope = Foodstuff.query.filter_by(user_id=current_user, location_id=4,
+                                     is_pantry=True).all()
 
-    return render_template("pantry.html")
+    return render_template("pantry.html", fridge=fridge, freezer=freezer,
+                            shelf=shelf, nope=nope)
+
+@app.route('/update', methods=["POST"])
+def update_foodstuff():
+    """update foodstuff item is_pantry and is_shopping in database"""
+
+    empties = request.form.getlist("empty")
+
+    for item in empties:
+        to_update = Foodstuff.query.get(item)
+        to_update.is_pantry = False
+
+    refills = request.form.getlist("refill")
+
+    for item in refills:
+        to_update = Foodstuff.query.get(item)
+        to_update.is_shopping = True
+
+    db.session.commit()
+    return redirect('/pantry')
 
 @app.route('/edit')
 def edit_item():
