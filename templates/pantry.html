@@ -1,9 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}Remote Pantry{% endblock %}
 {% block content %}
-
-<div>Display foodstuff by location then name. form redirects to reloaded pantry.</div>
-
 <div><table>
 <form action="update" method="POST">
     <caption>Fridge</caption>
@@ -15,7 +12,7 @@
     {% for item in fridge %}
     <tr>
         <td>
-            {{ item.name }}
+            <a href="/edit/{{ item.pantry_id }}">{{ item.name }}</a>
         </td>
         <td>
                 <input type="checkbox" name="empty" value="{{ item.pantry_id }}">
@@ -39,7 +36,7 @@
     {% for item in freezer %}
     <tr>
         <td>
-            {{ item.name }}
+            <a href="/edit/{{ item.pantry_id }}">{{ item.name }}</a>
         </td>
         <td>
                 <input type="checkbox" name="empty" value="{{ item.pantry_id }}">
@@ -63,7 +60,7 @@
     {% for item in shelf %}
     <tr>
         <td>
-            {{ item.name }}
+            <a href="/edit/{{ item.pantry_id }}">{{ item.name }}</a>
         </td>
         <td>
                 <input type="checkbox" name="empty" value="{{ item.pantry_id }}">
@@ -87,7 +84,7 @@
     {% for item in nope %}
     <tr>
         <td>
-            {{ item.name }}
+            <a href="/edit/{{ item.pantry_id }}">{{ item.name }}</a>
         </td>
         <td>
                 <input type="checkbox" name="empty" value="{{ item.pantry_id }}">

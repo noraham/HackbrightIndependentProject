@@ -2,7 +2,94 @@
 {% block title %}Remote Pantry Item Edit{% endblock %}
 {% block content %}
 
-Displays all info fields about item, can edit and submit to update database.
-reroutes to pantry display.
+<div><table>
+<form action="/update/{{ item.pantry_id }}" method="POST">
+    <caption>{{ item.name }}</caption>
+    <tr>
+        <th>field</th>
+        <th>current</th>
+        <th>update</th>
+    </tr>
+
+    <tr>
+        <td>Name: </td>
+        <td>
+            {{ item.name }}
+        </td>
+        <td>
+            <input type="text" name="name">
+        </td>
+    </tr>
+
+    <tr>
+        <td>In stock: </td>
+        <td>
+            {{ item.is_pantry }}
+        </td>
+        <td>
+            <input type="checkbox" name="pantry" value="reverse">
+        </td>
+    </tr>
+
+    <tr>
+        <td>On shopping list: </td>
+        <td>
+            {{ item.is_shopping }}
+        </td>
+        <td>
+            <input type="checkbox" name="shop" value="reverse">
+        </td>
+    </tr>
+
+    <tr>
+        <td>Last purchased: </td>
+        <td>
+           {{ lp }}
+        </td>
+        <td>
+            <input type="date" name="last_purch">
+        </td>
+    </tr>
+
+    <tr>
+        <td>Location: </td>
+        <td>
+            {{ item.location.location_name }}
+        </td>
+        <td>
+        <label><input type="radio" name="location" value="1">Fridge</label>
+        <label><input type="radio" name="location" value="2">Freezer</label>
+        <label><input type="radio" name="location" value="3">Shelf</label>
+        <label><input type="radio" name="location" value="4">Nope</label>
+        </td>
+    </tr>
+
+    <tr>
+        <td>Expires in: </td>
+        <td>
+            {{ item.exp }} days
+        </td>
+        <td>
+            <input type="number" name="exp">
+        </td>
+    </tr>
+
+    <tr>
+        <td>Description: </td>
+        <td>
+            {{ item.description }}
+        </td>
+        <td>
+            <textarea name="description"></textarea>
+        </td>
+    </tr>
+
+</table></div>
+
+<br>
+
+    <input type="submit" value="Update">
+</form>
+
 
 {% endblock %}

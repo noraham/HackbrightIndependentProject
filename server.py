@@ -174,13 +174,72 @@ def update_foodstuff():
     db.session.commit()
     return redirect('/pantry')
 
-@app.route('/edit')
-def edit_item():
+@app.route('/edit/<int:pantry_id>')
+def edit_item(pantry_id):
     """Display edit form"""
 
-    # need to add variable to route address
+    item = Foodstuff.query.get(pantry_id)
+    ugly = item.last_purch
+    pretty = ugly.strftime('%b %d, %Y')
 
-    return render_template("edit.html")
+    return render_template("edit.html", item=item, lp=pretty)
+
+@app.route('/update/<int:pantry_id>', methods=["POST"])
+def update_single_foodstuff(pantry_id):
+    """update single foodstuff item in database"""
+
+    # Grab from form
+    is_pantry = request.form.get("pantry")
+    is_shopping = request.form.get("shop")
+    name = request.form.get("name")
+    last_purch = request.form.get("last_purch")
+    location = request.form.get("location")
+    exp = request.form.get("exp")
+    description = request.form.get("description")
+
+    #Transform and auto-create
+    current_user = session["user_id"]
+
+    if name:
+        name = name.encode("utf8")
+    if location:
+        location = int(location)
+    if exp:
+        exp = int(exp)
+    if description:
+        description = description.encode("utf8")
+    if last_purch:
+        last_purch = datetime.strptime(last_purch, "%Y-%m-%d")
+
+    # For debug
+    print "******************"
+    print pantry_id, type(pantry_id)
+    print current_user, type(current_user)
+    print name, type(name)
+    print is_pantry, is_shopping
+    print location, type(location)
+    print exp, type(exp)
+    print last_purch, type(last_purch)
+    print description, type(description)
+    print "******************"
+
+    # if exp:
+    #     exp = int(exp)
+    #     new_item = Foodstuff(user_id=current_user, name=name, is_pantry=is_pantry,
+    #                      is_shopping=is_shopping, location_id=location, exp=exp)
+    #     db.session.add(new_item)
+    # else:
+    #     exp = None
+    #     new_item = Foodstuff(user_id=current_user, name=name, is_pantry=is_pantry,
+    #                      is_shopping=is_shopping, location_id=location, exp=exp)
+    #     db.session.add(new_item)
+    
+    # db.session.commit()
+
+    # flash("Your item has been updated")
+    return redirect('/pantry')
+
+
 
 @app.route('/shop')
 def store_form_display():
