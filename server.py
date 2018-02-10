@@ -92,7 +92,10 @@ def newuser_form_handle():
 def foodstuff_form_display():
     """Display add form"""
 
-    return render_template("add.html")
+    current_user = session["user_id"]
+    user_locs = Location.query.filter_by(user_id=current_user).all()
+
+    return render_template("add.html", user_locs=user_locs)
 
 @app.route('/add_item', methods=["POST"])
 def add_foodstuff():
@@ -131,6 +134,27 @@ def add_foodstuff():
                          is_shopping=is_shopping, location_id=location, exp=exp)
         db.session.add(new_item)
     
+    db.session.commit()
+
+    flash("Successfully added")
+    return redirect('/add')
+
+@app.route('/add_loc', methods=["POST"])
+def add_location():
+    """add a new location"""
+
+    # Grab from form
+    loc = request.form.get("loc")
+
+    #Transform and auto-create
+    current_user = session["user_id"]
+
+    # For debug
+    print current_user, type(current_user)
+    print loc, type(loc)
+
+    new_loc = Location(user_id=current_user, location_name=loc)
+    db.session.add(new_loc)
     db.session.commit()
 
     flash("Successfully added")
@@ -181,13 +205,15 @@ def edit_item(pantry_id):
     item = Foodstuff.query.get(pantry_id)
     ugly = item.last_purch
     pretty = ugly.strftime('%b %d, %Y')
+    current_user = session["user_id"]
+    user_locs = Location.query.filter_by(user_id=current_user).all()
 
-    return render_template("edit.html", item=item, lp=pretty)
+    return render_template("edit.html", item=item, lp=pretty, user_locs=user_locs)
 
 @app.route('/update/<int:pantry_id>', methods=["POST"])
 def update_single_foodstuff(pantry_id):
     """update single foodstuff item in database"""
-
+    print request.form
     # Grab from form
     is_pantry = request.form.get("pantry")
     is_shopping = request.form.get("shop")
@@ -198,45 +224,50 @@ def update_single_foodstuff(pantry_id):
     description = request.form.get("description")
 
     #Transform and auto-create
-    current_user = session["user_id"]
+    # current_user = session["user_id"]
+    current_food_obj = Foodstuff.query.get(pantry_id)
 
     if name:
         name = name.encode("utf8")
+        current_food_obj.name = name
     if location:
         location = int(location)
+        current_food_obj.location_id = location
     if exp:
         exp = int(exp)
+        current_food_obj.exp = exp
     if description:
         description = description.encode("utf8")
+        current_food_obj.description = description
     if last_purch:
         last_purch = datetime.strptime(last_purch, "%Y-%m-%d")
+        current_food_obj.last_purch = last_purch
+    if is_pantry:
+        if current_food_obj.is_pantry == True:
+            current_food_obj.is_pantry = False
+        else:
+            current_food_obj.is_pantry = True
+    if is_shopping:
+        if current_food_obj.is_shopping == True:
+            current_food_obj.is_shopping = False
+        else:
+            current_food_obj.is_shopping = True
 
-    # For debug
-    print "******************"
-    print pantry_id, type(pantry_id)
-    print current_user, type(current_user)
-    print name, type(name)
-    print is_pantry, is_shopping
-    print location, type(location)
-    print exp, type(exp)
-    print last_purch, type(last_purch)
-    print description, type(description)
-    print "******************"
-
-    # if exp:
-    #     exp = int(exp)
-    #     new_item = Foodstuff(user_id=current_user, name=name, is_pantry=is_pantry,
-    #                      is_shopping=is_shopping, location_id=location, exp=exp)
-    #     db.session.add(new_item)
-    # else:
-    #     exp = None
-    #     new_item = Foodstuff(user_id=current_user, name=name, is_pantry=is_pantry,
-    #                      is_shopping=is_shopping, location_id=location, exp=exp)
-    #     db.session.add(new_item)
+    # # For debug
+    # print "******************"
+    # print pantry_id, type(pantry_id)
+    # # print current_user, type(current_user)
+    # print name, type(name)
+    # print is_pantry, is_shopping
+    # print location, type(location)
+    # print exp, type(exp)
+    # print last_purch, type(last_purch)
+    # print description, type(description)
+    # print "******************"
     
-    # db.session.commit()
+    db.session.commit()
 
-    # flash("Your item has been updated")
+    flash("Your item has been updated")
     return redirect('/pantry')
 
 

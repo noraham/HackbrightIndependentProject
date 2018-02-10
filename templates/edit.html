@@ -57,10 +57,10 @@
             {{ item.location.location_name }}
         </td>
         <td>
-        <label><input type="radio" name="location" value="1">Fridge</label>
-        <label><input type="radio" name="location" value="2">Freezer</label>
-        <label><input type="radio" name="location" value="3">Shelf</label>
-        <label><input type="radio" name="location" value="4">Nope</label>
+        {% for loc in user_locs %}
+        <label><input type="radio" name="location" value="{{ loc.location_id }}">{{ loc.location_name }}</label>
+        {% endfor %}
+    </div>
         </td>
     </tr>
 

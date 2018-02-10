@@ -35,9 +35,12 @@ def load_locations(loc_file):
     print "Locations"
 
     for row in open(loc_file):
-        loc_nam = row.rstrip()
+        row = row.rstrip()
+        user_id, name = row.split("|")
 
-        loc = Location(location_name=loc_nam)
+        user_id = int(user_id)
+
+        loc = Location(location_name=name, user_id=user_id)
 
         db.session.add(loc)
 

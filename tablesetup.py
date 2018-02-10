@@ -59,7 +59,10 @@ class Location(db.Model):
     __tablename__ = "locations"
 
     location_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     location_name = db.Column(db.String(50), nullable=False)
+
+    user = db.relationship('User', backref=db.backref("locations"))
 
     def __repr__(self):
         """display locations nicely, for debugging"""
