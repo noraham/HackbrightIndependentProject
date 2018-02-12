@@ -2,7 +2,30 @@
 {% block title %}@Store{% endblock %}
 {% block content %}
 
-<div>Display items on shopping list with form to refill. redirect to pantry.</div>
-
+<form action="restock" method="POST">
+<div><table>
+    <caption>Shopping List</caption>
+        <tr>
+            <th>name</th>
+            <th>refill</th>
+            <th>exp</th>
+        </tr>
+        {% for foodstuff in shopping_list %}                
+            <tr>
+                <td>
+                    {{ foodstuff.name }}
+                </td>
+                <td>
+                    <input type="checkbox" name="refill" value="{{ foodstuff.pantry_id }}">
+                </td>
+                <td>
+                    Expires in <input type="number" name="exp"> days
+                </td>
+            </tr>
+        {% endfor %}
+</table></div>
+    <br><br>
+    <input type="submit">
+</form>
 
 {% endblock %}

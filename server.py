@@ -1,6 +1,6 @@
 """local server for Remote Pantry"""
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import bcrypt
 
 from jinja2 import StrictUndefined
@@ -301,9 +301,26 @@ def update_single_foodstuff(pantry_id):
 def store_form_display():
     """Display shopping list form"""
 
-    # query foodstuffs by is_shopping=True, pass to template
+    current_user = session["user_id"]
+    shopping_list = Foodstuff.query.filter_by(user_id=current_user,
+                                              is_shopping=True).all()
 
-    return render_template("store.html")
+    return render_template("store.html", shopping_list=shopping_list)
+
+@app.route('/restock', methods=["POST"])
+def restock_foodstuff():
+    """update foodstuff item is_pantry database"""
+
+    refills = request.form.getlist("refill")
+
+    for item in refills:
+        to_update = Foodstuff.query.get(item)
+        to_update.is_pantry = True
+        to_update.is_shopping = False
+        to_update.last_purch = datetime.utcnow()
+
+    db.session.commit()
+    return redirect('/shop')
 
 @app.route('/eatme')
 def eatme_display():
@@ -311,7 +328,23 @@ def eatme_display():
 
     # query foodstuffs for items with exp, order by ascending, pass to template.
 
-    return render_template("eatme.html")
+    current_user = session["user_id"]
+    eatme = Foodstuff.query.filter(Foodstuff.user_id == current_user,
+                                              Foodstuff.exp != None).all()    
+    eat_me = []
+    for foodstuff in eatme:
+        temp = []
+        temp.append(foodstuff.pantry_id)
+        temp.append(foodstuff.name)
+        temp.append(foodstuff.location.location_name)
+        last_purch = foodstuff.last_purch
+        exp = foodstuff.exp
+        exp_date = last_purch + timedelta(days=exp)
+        time_left = exp_date - datetime.utcnow()
+        temp.append(time_left)
+        eat_me.append(temp)
+
+    return render_template("eatme.html", eat_me=eat_me)
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point

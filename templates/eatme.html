@@ -4,4 +4,29 @@
 
 Display foods with exp, ascending order, form redirects to reloaded page.
 
+<h3>Eat Me</h3>
+<h5>Your foods ordered by first to expire</h5>
+<h5>(if it's red, it's past the expiration you input!)</h5>
+
+<table>
+    <tr>
+        <th>name</th>
+        <th>expiration</th>
+        <th>location</th>
+    </tr>
+    {% for foodstuff in eat_me %}
+    <tr>
+        <td>
+            <a href="/edit/{{ foodstuff[0] }}">{{ foodstuff[1] }}</a>
+        </td>
+        <td>
+            blank
+        </td>
+        <td>
+            {{ foodstuff[2] }}
+        </td>
+    </tr>
+</table> 
+{% endfor %}
+
 {% endblock %}
