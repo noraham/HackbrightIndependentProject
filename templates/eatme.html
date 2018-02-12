@@ -2,11 +2,9 @@
 {% block title %}eat me{% endblock %}
 {% block content %}
 
-Display foods with exp, ascending order, form redirects to reloaded page.
-
 <h3>Eat Me</h3>
-<h5>Your foods ordered by first to expire</h5>
-<h5>(if it's red, it's past the expiration you input!)</h5>
+<h5>Your foods, ordered by first to expire</h5>
+<h5>(if it's red, it's past the expiration input!)</h5>
 
 <table>
     <tr>
@@ -20,7 +18,7 @@ Display foods with exp, ascending order, form redirects to reloaded page.
             <a href="/edit/{{ foodstuff[0] }}">{{ foodstuff[1] }}</a>
         </td>
         <td>
-            blank
+            {{ foodstuff[3] }}
         </td>
         <td>
             {{ foodstuff[2] }}

@@ -340,7 +340,7 @@ def eatme_display():
         last_purch = foodstuff.last_purch
         exp = foodstuff.exp
         exp_date = last_purch + timedelta(days=exp)
-        time_left = exp_date - datetime.utcnow()
+        time_left = (exp_date - datetime.utcnow()).days
         temp.append(time_left)
         eat_me.append(temp)
 
