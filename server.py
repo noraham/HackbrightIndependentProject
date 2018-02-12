@@ -80,13 +80,27 @@ def newuser_form_handle():
     password = password.encode('utf8')
     hashed_pword = bcrypt.hashpw(password, bcrypt.gensalt(10))
 
-    new_user = User(email=email, pword=hashed_pword, fname=fname, lname=lname)
+    tricky_user = User.query.filter_by(email=email).first()
 
-    db.session.add(new_user)
-    db.session.commit()
-
-    flash("Successfully registered")
-    return redirect('/add')
+    if not tricky_user:
+        new_user = User(email=email, pword=hashed_pword, fname=fname, lname=lname)
+        db.session.add(new_user)
+        db.session.commit()
+        flash("Successfully registered")
+        user = User.query.filter_by(email=email).first()
+        session["user_id"] = user.user_id
+        """Would like to initialize 3 basic locations for new users, giving me errors"""
+        # new_fridge = Location(user_id=user, location_name="Fridge")
+        # db.session.add(new_fridge)
+        # new_freezer = Location(user_id=user, location_name="Freezer")
+        # db.session.add(new_freezer)
+        # new_shelf = Location(user_id=user, location_name="Shelf")
+        # db.session.add(new_shelf)
+        # db.session.commit()
+        return redirect('/add')
+    else:
+        flash("There is already an account linked to this email. Please log in.")
+        return redirect('/')
 
 @app.route('/add')
 def foodstuff_form_display():
@@ -153,12 +167,17 @@ def add_location():
     # print current_user, type(current_user)
     # print loc, type(loc)
 
-    new_loc = Location(user_id=current_user, location_name=loc)
-    db.session.add(new_loc)
-    db.session.commit()
+    tricky_user = Location.query.filter_by(user_id=current_user, location_name=loc).first()
 
-    flash("Successfully added")
-    return redirect('/add')
+    if not tricky_user:
+        new_loc = Location(user_id=current_user, location_name=loc)
+        db.session.add(new_loc)
+        db.session.commit()
+        flash("Successfully added")
+        return redirect('/add')
+    else:
+        flash("Whoops! That location already exists in your pantry!")
+        return redirect('/add')
 
 @app.route('/pantry')
 def pantry_display():
