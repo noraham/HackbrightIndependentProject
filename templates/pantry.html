@@ -1,103 +1,33 @@
 {% extends 'base.html' %}
 {% block title %}Remote Pantry{% endblock %}
 {% block content %}
-<div><table>
+
 <form action="update" method="POST">
-    <caption>Fridge</caption>
-    <tr>
-        <th>name</th>
-        <th>empty</th>
-        <th>refill</th>
-    </tr>
-    {% for item in fridge %}
-    <tr>
-        <td>
-            <a href="/edit/{{ item.pantry_id }}">{{ item.name }}</a>
-        </td>
-        <td>
-                <input type="checkbox" name="empty" value="{{ item.pantry_id }}">
-        </td>
-        <td>
-                <input type="checkbox" name="refill" value="{{ item.pantry_id }}">
-        </td>
-    </tr>
-    {% endfor %}
-</table></div>
-
-<br><br>
-
+{% for key, val in pantry.iteritems() %}
 <div><table>
-    <caption>Freezer</caption>
-    <tr>
-        <th>name</th>
-        <th>empty</th>
-        <th>refill</th>
-    </tr>
-    {% for item in freezer %}
-    <tr>
-        <td>
-            <a href="/edit/{{ item.pantry_id }}">{{ item.name }}</a>
-        </td>
-        <td>
-                <input type="checkbox" name="empty" value="{{ item.pantry_id }}">
-        </td>
-        <td>
-                <input type="checkbox" name="refill" value="{{ item.pantry_id }}">
-        </td>
-    </tr>
-    {% endfor %}
+    <caption>{{ key }}</caption>
+        <tr>
+            <th>name</th>
+            <th>empty</th>
+            <th>refill</th>
+        </tr>
+            {% for each in val %}
+                <tr>
+                    <td>
+                        <a href="/edit/{{ each[1] }}">{{ each[0] }}</a>
+                    </td>
+                    <td>
+                        <input type="checkbox" name="empty" value="{{ each[1] }}">
+                    </td>
+                    <td>
+                        <input type="checkbox" name="refill" value="{{ each[1] }}">
+                    </td>
+                </tr>
+            {% endfor %}
+
 </table></div>
-
-<br><br>
-
-<div><table>
-    <caption>Shelf</caption>
-    <tr>
-        <th>name</th>
-        <th>empty</th>
-        <th>refill</th>
-    </tr>
-    {% for item in shelf %}
-    <tr>
-        <td>
-            <a href="/edit/{{ item.pantry_id }}">{{ item.name }}</a>
-        </td>
-        <td>
-                <input type="checkbox" name="empty" value="{{ item.pantry_id }}">
-        </td>
-        <td>
-                <input type="checkbox" name="refill" value="{{ item.pantry_id }}">
-        </td>
-    </tr>
-    {% endfor %}
-</table></div>
-
-<br><br>
-
-<div><table>
-    <caption>Nope</caption>
-    <tr>
-        <th>name</th>
-        <th>empty</th>
-        <th>refill</th>
-    </tr>
-    {% for item in nope %}
-    <tr>
-        <td>
-            <a href="/edit/{{ item.pantry_id }}">{{ item.name }}</a>
-        </td>
-        <td>
-                <input type="checkbox" name="empty" value="{{ item.pantry_id }}">
-        </td>
-        <td>
-                <input type="checkbox" name="refill" value="{{ item.pantry_id }}">
-        </td>
-    </tr>
-    {% endfor %}
-</table></div>
-
-<br><br>
-
+{% endfor %}
+    <br><br>
     <input type="submit">
 </form>
 

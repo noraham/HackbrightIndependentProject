@@ -150,8 +150,8 @@ def add_location():
     current_user = session["user_id"]
 
     # For debug
-    print current_user, type(current_user)
-    print loc, type(loc)
+    # print current_user, type(current_user)
+    # print loc, type(loc)
 
     new_loc = Location(user_id=current_user, location_name=loc)
     db.session.add(new_loc)
@@ -164,20 +164,27 @@ def add_location():
 def pantry_display():
     """Display pantry from database"""
 
-    # query foodstuffs by user_id and location_id, pass to template
-    # Is there a non-hardcoded way to do this?
+    #generate a list of user's location objects
     current_user = session["user_id"]
-    fridge = Foodstuff.query.filter_by(user_id=current_user, location_id=1,
-                                       is_pantry=True).all()
-    freezer = Foodstuff.query.filter_by(user_id=current_user, location_id=2,
-                                        is_pantry=True).all()
-    shelf = Foodstuff.query.filter_by(user_id=current_user, location_id=3,
-                                      is_pantry=True).all()
-    nope = Foodstuff.query.filter_by(user_id=current_user, location_id=4,
-                                     is_pantry=True).all()
+    user_locs = Location.query.filter_by(user_id=current_user).all()
 
-    return render_template("pantry.html", fridge=fridge, freezer=freezer,
-                            shelf=shelf, nope=nope)
+    """iterate through list of location objects, pulling all foodstuffs that match
+    location id, append to dictionary of location_name:foodstuff"""
+    pantry = {}
+    for loc in user_locs:
+        items = []
+        item_list = Foodstuff.query.filter_by(location_id=loc.location_id,
+                                         user_id=current_user, is_pantry=True).all()
+        for each in item_list:
+            temp = []
+            temp.append(each.name)
+            temp.append(each.pantry_id)
+            items.append(temp)
+
+        items.sort()
+        pantry[loc.location_name] = items
+
+    return render_template("pantry.html", pantry=pantry)
 
 @app.route('/update', methods=["POST"])
 def update_foodstuff():
@@ -269,7 +276,6 @@ def update_single_foodstuff(pantry_id):
 
     flash("Your item has been updated")
     return redirect('/pantry')
-
 
 
 @app.route('/shop')
