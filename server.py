@@ -102,7 +102,7 @@ def newuser_form_handle():
         db.session.add(new_shelf)
         db.session.commit()
         return redirect('/add')
-        
+
     else:
         flash("There is already an account linked to this email. Please log in.")
         return redirect('/')
@@ -189,6 +189,28 @@ def add_location():
         flash("Whoops! That location already exists in your pantry!")
         return redirect('/add')
 
+@app.route('/update/<int:location_id>')
+def update_location_form(location_id):
+    """Display form to update location name"""
+
+    loc = Location.query.filter_by(location_id=location_id).one()
+
+    return render_template('edit_locs.html', loc=loc)
+
+@app.route('/update_loc/<int:location_id>', methods=["POST"])
+def update_location(location_id):
+    """change location_name"""
+
+    # Grab from form
+    new_name = request.form.get("new_name")
+    to_update = Location.query.filter_by(location_id=location_id).one()
+
+    # Update location's name
+    to_update.location_name = new_name
+    db.session.commit()
+
+    return redirect("/pantry")
+
 @app.route('/pantry')
 def pantry_display():
     """Display pantry from database"""
@@ -222,7 +244,7 @@ def pantry_display():
         """Master list is now a list of lists, the internal lists have only the 
         foodstuff info our page needs, this master list becomes the value in 
         the pantry dictionary, where key is name of location."""
-        pantry[loc.location_name] = items
+        pantry[loc] = items
 
     return render_template("pantry.html", pantry=pantry)
 
