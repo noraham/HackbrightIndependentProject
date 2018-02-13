@@ -92,15 +92,17 @@ def newuser_form_handle():
         flash("Successfully registered")
         user = User.query.filter_by(email=email).first()
         session["user_id"] = user.user_id
-        """Would like to initialize 3 basic locations for new users, giving me errors"""
-        # new_fridge = Location(user_id=user, location_name="Fridge")
-        # db.session.add(new_fridge)
-        # new_freezer = Location(user_id=user, location_name="Freezer")
-        # db.session.add(new_freezer)
-        # new_shelf = Location(user_id=user, location_name="Shelf")
-        # db.session.add(new_shelf)
-        # db.session.commit()
+        
+        # Initialize these 3 basic locations for a new user
+        new_fridge = Location(user_id=user.user_id, location_name="Fridge")
+        db.session.add(new_fridge)
+        new_freezer = Location(user_id=user.user_id, location_name="Freezer")
+        db.session.add(new_freezer)
+        new_shelf = Location(user_id=user.user_id, location_name="Shelf")
+        db.session.add(new_shelf)
+        db.session.commit()
         return redirect('/add')
+        
     else:
         flash("There is already an account linked to this email. Please log in.")
         return redirect('/')
