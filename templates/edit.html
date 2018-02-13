@@ -24,20 +24,26 @@
     <tr>
         <td>In stock: </td>
         <td>
-            {{ item.is_pantry }}
-        </td>
-        <td>
-            <input type="checkbox" name="pantry" value="reverse">
+            {% if item.is_pantry == True %}
+                <label>True<input type="checkbox" name="pantry" value="True" checked></label>
+                <label>False<input type="checkbox" name="pantry" value="False"></label>
+            {% else %}
+                <label>True<input type="checkbox" name="pantry" value="True"></label>
+                <label>False<input type="checkbox" name="pantry" value="False" checked></label>
+            {% endif %}            
         </td>
     </tr>
 
     <tr>
         <td>On shopping list: </td>
         <td>
-            {{ item.is_shopping }}
-        </td>
-        <td>
-            <input type="checkbox" name="shop" value="reverse">
+            {% if item.is_shopping == True %}
+                <label>True<input type="checkbox" name="shop" value="True" checked></label>
+                <label>False<input type="checkbox" name="shop" value="False"></label>
+            {% else %}
+                <label>True<input type="checkbox" name="shop" value="True"></label>
+                <label>False<input type="checkbox" name="shop" value="False" checked></label>
+            {% endif %}            
         </td>
     </tr>
 
@@ -54,13 +60,13 @@
     <tr>
         <td>Location: </td>
         <td>
-            {{ item.location.location_name }}
-        </td>
-        <td>
         {% for loc in user_locs %}
-        <label><input type="radio" name="location" value="{{ loc.location_id }}">{{ loc.location_name }}</label>
+            {% if item.location.location_id ==  loc.location_id%}
+                <label><input type="radio" name="location" value="{{ loc.location_id }}"checked>{{ loc.location_name }}</label>
+            {% else %}
+                <label><input type="radio" name="location" value="{{ loc.location_id }}">{{ loc.location_name }}</label>
+            {% endif %}
         {% endfor %}
-    </div>
         </td>
     </tr>
 
