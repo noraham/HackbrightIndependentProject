@@ -33,6 +33,7 @@ def log_in_handle():
     email = request.form["email"]
     pword_input = request.form["password"]
 
+    # Check if email exists in db
     user = User.query.filter_by(email=email).first()
     if not user:
         flash("No such user")
@@ -40,14 +41,14 @@ def log_in_handle():
 
     # Transform and check
     pword_in_table = user.pword
-    valid_password = (bcrypt.hashpw(pword_input.encode('utf8'), pword_in_table.encode('utf8'))
-                     == pword_in_table)
+    valid_password = (bcrypt.hashpw(pword_input.encode('utf8'),
+                      pword_in_table.encode('utf8')) == pword_in_table)
 
+    # Log in or give incorrect pword flash
     if valid_password:
         session["user_id"] = user.user_id
         flash("Logged in")
         return redirect('/pantry')
-
     else:
         flash("Incorrect password")
         return redirect("/")
@@ -80,9 +81,11 @@ def newuser_form_handle():
     password = password.encode('utf8')
     hashed_pword = bcrypt.hashpw(password, bcrypt.gensalt(10))
 
+    # check if email has already been registered
     tricky_user = User.query.filter_by(email=email).first()
 
     if not tricky_user:
+        # If email is not in system, allow registration
         new_user = User(email=email, pword=hashed_pword, fname=fname, lname=lname)
         db.session.add(new_user)
         db.session.commit()
@@ -107,6 +110,7 @@ def foodstuff_form_display():
     """Display add form"""
 
     current_user = session["user_id"]
+    # Pull and pass user's locations for radio buttons
     user_locs = Location.query.filter_by(user_id=current_user).all()
 
     return render_template("add.html", user_locs=user_locs)
@@ -137,6 +141,8 @@ def add_foodstuff():
     # print location, type(location)
     # print exp, type(exp)
 
+    """Expiration is optional, so adding items has 2 routes, depending if exp 
+    has been declared"""
     if exp:
         exp = int(exp)
         new_item = Foodstuff(user_id=current_user, name=name, is_pantry=is_pantry,
@@ -167,9 +173,11 @@ def add_location():
     # print current_user, type(current_user)
     # print loc, type(loc)
 
+    # Check if a location with this name already exists
     tricky_user = Location.query.filter_by(user_id=current_user, location_name=loc).first()
 
     if not tricky_user:
+        # If location name is new, allow creation
         new_loc = Location(user_id=current_user, location_name=loc)
         db.session.add(new_loc)
         db.session.commit()
@@ -183,40 +191,53 @@ def add_location():
 def pantry_display():
     """Display pantry from database"""
 
-    #generate a list of user's location objects
+    # Generate a list of user's location objects
     current_user = session["user_id"]
     user_locs = Location.query.filter_by(user_id=current_user).all()
 
-    """iterate through list of location objects, pulling all foodstuffs that match
-    location id, append to dictionary of location_name:foodstuff"""
+    """iterate through list of location objects, pulling all foodstuffs that 
+    match location id, append to pantry dictionary of 
+    location_name:[list of matching foodstuffs]"""
     pantry = {}
     for loc in user_locs:
+
+        # Make master list that we can add to, this will become the value
         items = []
+        # Make a list of all foods objects in this location
         item_list = Foodstuff.query.filter_by(location_id=loc.location_id,
                                          user_id=current_user, is_pantry=True).all()
+
+        """Make a list of a food object's name and id, append this list to the
+        master list"""
         for each in item_list:
             temp = []
             temp.append(each.name)
             temp.append(each.pantry_id)
             items.append(temp)
 
+        # Results must be alphabetically sorted, which is why it's a list
         items.sort()
+        """Master list is now a list of lists, the internal lists have only the 
+        foodstuff info our page needs, this master list becomes the value in 
+        the pantry dictionary, where key is name of location."""
         pantry[loc.location_name] = items
 
     return render_template("pantry.html", pantry=pantry)
 
 @app.route('/update', methods=["POST"])
 def update_foodstuff():
-    """update foodstuff item is_pantry and is_shopping in database"""
+    """update foodstuff item is_pantry and/or is_shopping in database"""
 
+    # Grab from form
     empties = request.form.getlist("empty")
+    refills = request.form.getlist("refill")
 
+    # Update item's is_pantry value
     for item in empties:
         to_update = Foodstuff.query.get(item)
         to_update.is_pantry = False
 
-    refills = request.form.getlist("refill")
-
+    # Update item's is_shopping value
     for item in refills:
         to_update = Foodstuff.query.get(item)
         to_update.is_shopping = True
@@ -226,20 +247,22 @@ def update_foodstuff():
 
 @app.route('/edit/<int:pantry_id>')
 def edit_item(pantry_id):
-    """Display edit form"""
+    """Display every field about a pantry item, with option to update any field"""
 
+    # Grab from database   
     item = Foodstuff.query.get(pantry_id)
-    ugly = item.last_purch
-    pretty = ugly.strftime('%b %d, %Y')
     current_user = session["user_id"]
     user_locs = Location.query.filter_by(user_id=current_user).all()
+    # Convert to display format
+    ugly = item.last_purch
+    pretty = ugly.strftime('%b %d, %Y')
 
     return render_template("edit.html", item=item, lp=pretty, user_locs=user_locs)
 
 @app.route('/update/<int:pantry_id>', methods=["POST"])
 def update_single_foodstuff(pantry_id):
-    """update single foodstuff item in database"""
-    print request.form
+    """update any field on a single foodstuff item"""
+
     # Grab from form
     is_pantry = request.form.get("pantry")
     is_shopping = request.form.get("shop")
@@ -250,9 +273,10 @@ def update_single_foodstuff(pantry_id):
     description = request.form.get("description")
 
     #Transform and auto-create
-    # current_user = session["user_id"]
     current_food_obj = Foodstuff.query.get(pantry_id)
 
+    # Whatever fields a user has filled out will be updated
+    # If no fields were filled, the item will not be changed
     if name:
         name = name.encode("utf8")
         current_food_obj.name = name
@@ -301,6 +325,7 @@ def update_single_foodstuff(pantry_id):
 def store_form_display():
     """Display shopping list form"""
 
+    # Grab all user's items with is_shopping status
     current_user = session["user_id"]
     shopping_list = Foodstuff.query.filter_by(user_id=current_user,
                                               is_shopping=True).all()
@@ -309,10 +334,12 @@ def store_form_display():
 
 @app.route('/restock', methods=["POST"])
 def restock_foodstuff():
-    """update foodstuff item is_pantry database"""
+    """update foodstuff item"""
 
+    # Grab from form
     refills = request.form.getlist("refill")
 
+    # Remove from shopping list, change pantry status, update last_purch
     for item in refills:
         to_update = Foodstuff.query.get(item)
         to_update.is_pantry = True
@@ -326,22 +353,26 @@ def restock_foodstuff():
 def eatme_display():
     """Display eatme"""
 
-    # query foodstuffs for items with exp, order by ascending, pass to template.
-
+    # Grab all user's items with an exp
     current_user = session["user_id"]
-    eatme = Foodstuff.query.filter(Foodstuff.user_id == current_user,
+    with_exp = Foodstuff.query.filter(Foodstuff.user_id == current_user,
                                               Foodstuff.exp != None).all()    
+    # Master list of lists, to be passed to template
     eat_me = []
-    for foodstuff in eatme:
+    for foodstuff in with_exp:
+        # Inner list that will be appended to master list
         temp = []
         temp.append(foodstuff.pantry_id)
         temp.append(foodstuff.name)
         temp.append(foodstuff.location.location_name)
+
+        # DateTime math to display days until item expires
         last_purch = foodstuff.last_purch
         exp = foodstuff.exp
         exp_date = last_purch + timedelta(days=exp)
         time_left = (exp_date - datetime.utcnow()).days
         temp.append(time_left)
+
         eat_me.append(temp)
 
     return render_template("eatme.html", eat_me=eat_me)
