@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% set active_page = "store" %}
 {% block title %}@Store{% endblock %}
 {% block content %}
 
@@ -8,7 +9,7 @@
         <tr>
             <th>name</th>
             <th>refill</th>
-            <th>exp</th>
+            <th>exp (optional)</th>
         </tr>
         {% for foodstuff in shopping_list %}                
             <tr>
@@ -19,7 +20,11 @@
                     <input type="checkbox" name="refill" value="{{ foodstuff.pantry_id }}">
                 </td>
                 <td>
+                    {% if foodstuff.exp != None %}
+                    Expires in <input type="number" name="exp" placeholder="{{ foodstuff.exp }}"> days
+                    {% else %}
                     Expires in <input type="number" name="exp"> days
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}

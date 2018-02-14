@@ -1,11 +1,22 @@
 {% extends 'base.html' %}
+{% set active_page = "pantry" %}
 {% block title %}Remote Pantry{% endblock %}
 {% block content %}
 
 <form action="update" method="POST">
 {% for key, val in pantry.iteritems() %}
 <div><table>
-    <caption><a href="/update/{{ key.location_id }}">{{ key.location_name }}</a></caption>
+    <caption>
+        <div class="dropdown">
+          <button class="btn btn-default dropdown-toggle" type="button" id="drop1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{ key.location_name }}
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="drop1">
+            <li><a href="/update/{{ key.location_id }}">Edit</a></li>
+          </ul>
+        </div>
+    </caption>
         <tr>
             <th>name</th>
             <th>out of stock</th>
@@ -30,5 +41,4 @@
     <br><br>
     <input type="submit">
 </form>
-
 {% endblock %}

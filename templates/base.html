@@ -2,30 +2,68 @@
 <html>
 <head>
   <title>{% block title %}TITLE{% endblock %}</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <style>
+    body  {padding-top: 70px;}
+  </style>
 </head>
 
 <body>
-  <div>COMING SOON: NAVBAR!
-  <a href="/pantry">pantry</a>
-  <a href="/add">add page</a>
-  <a href="/shop">@store</a>
-  <a href="/eatme">eatme</a>   
-    {% if "user_id" in session %}
-        <a href="/logout">Logout</a>
-    {% else %}
-        <a href="/">Login</a>
-    {% endif %}</div>
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">Remote Pantry</a>
+    </div>
 
-    {% for flash in get_flashed_messages() %}
-        {{ flash }}
-    {% endfor %}
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li {% if active_page == 'pantry' %} class="active" {% endif %}><a href="/pantry">Pantry</a></li>
+        <li {% if active_page == 'add' %} class="active" {% endif %}><a href="/add">Add</a></li>
+        <li {% if active_page == 'store' %} class="active" {% endif %}><a href="/shop">@Store</a></li>
+        <li {% if active_page == 'eatme' %} class="active" {% endif %}><a href="/eatme">EatMe</a></li>
+      </ul>
+      <form class="navbar-form navbar-right">
+        {% if "user_id" in session %}
+          <a href="/logout"><button type="button" class="btn btn-default">Logout</button></a>
+        {% else %}
+          <a href="/"><button type="button" class="btn btn-default">Login</button></a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+</nav>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        {% if category == 'message' %}
+          <div class="alert alert-success" role="alert">
+          <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
+          <span class="sr-only">Success:</span>
+        {% else %}
+          <div class="alert alert-{{ category }}" role="alert">
+          <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+          <span class="sr-only">Error:</span>
+        {% endif %}
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
 
   {% block content %}CONTENT{% endblock %}
 
   <br>
   <br>
   <hr>
-  <footer>Remote Pantry 2018</footer>
-
+  <footer><div class="container-fluid">Remote Pantry 2018</div></footer>
+  <script src="http://code.jquery.com/jquery.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </body>
 </html>

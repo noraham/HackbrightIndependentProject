@@ -36,7 +36,7 @@ def log_in_handle():
     # Check if email exists in db
     user = User.query.filter_by(email=email).first()
     if not user:
-        flash("No such user")
+        flash("No such user", 'danger')
         return redirect("/")
 
     # Transform and check
@@ -50,7 +50,7 @@ def log_in_handle():
         flash("Logged in")
         return redirect('/pantry')
     else:
-        flash("Incorrect password")
+        flash("Incorrect password", 'danger')
         return redirect("/")
 
 @app.route('/logout')
@@ -104,7 +104,7 @@ def newuser_form_handle():
         return redirect('/add')
 
     else:
-        flash("There is already an account linked to this email. Please log in.")
+        flash("There is already an account linked to this email. Please log in.", 'danger')
         return redirect('/')
 
 @app.route('/add')
@@ -186,7 +186,7 @@ def add_location():
         flash("Successfully added")
         return redirect('/add')
     else:
-        flash("Whoops! That location already exists in your pantry!")
+        flash("Whoops! That location already exists in your pantry!", 'danger')
         return redirect('/add')
 
 @app.route('/update/<int:location_id>')
@@ -217,7 +217,7 @@ def pantry_display():
 
     # Generate a list of user's location objects
     current_user = session["user_id"]
-    user_locs = Location.query.filter_by(user_id=current_user).all()
+    user_locs = Location.query.filter_by(user_id=current_user).order_by(Location.location_name).all()
 
     """iterate through list of location objects, pulling all foodstuffs that 
     match location id, append to pantry dictionary of 
@@ -229,7 +229,7 @@ def pantry_display():
         items = []
         # Make a list of all foods objects in this location
         item_list = Foodstuff.query.filter_by(location_id=loc.location_id,
-                                         user_id=current_user, is_pantry=True).all()
+                    user_id=current_user, is_pantry=True).order_by(Foodstuff.name).all()
 
         """Make a list of a food object's name and id, append this list to the
         master list"""
@@ -239,8 +239,6 @@ def pantry_display():
             temp.append(each.pantry_id)
             items.append(temp)
 
-        # Results must be alphabetically sorted, which is why it's a list
-        items.sort()
         """Master list is now a list of lists, the internal lists have only the 
         foodstuff info our page needs, this master list becomes the value in 
         the pantry dictionary, where key is name of location."""
