@@ -25,11 +25,11 @@
         <td>In stock: </td>
         <td>
             {% if item.is_pantry == True %}
-                <label>True<input type="checkbox" name="pantry" value="True" checked></label>
-                <label>False<input type="checkbox" name="pantry" value="False"></label>
+                <label>True<input type="radio" name="pantry" value="True" checked></label>
+                <label>False<input type="radio" name="pantry" value="False"></label>
             {% else %}
-                <label>True<input type="checkbox" name="pantry" value="True"></label>
-                <label>False<input type="checkbox" name="pantry" value="False" checked></label>
+                <label>True<input type="radio" name="pantry" value="True"></label>
+                <label>False<input type="radio" name="pantry" value="False" checked></label>
             {% endif %}            
         </td>
     </tr>
@@ -38,11 +38,11 @@
         <td>On shopping list: </td>
         <td>
             {% if item.is_shopping == True %}
-                <label>True<input type="checkbox" name="shop" value="True" checked></label>
-                <label>False<input type="checkbox" name="shop" value="False"></label>
+                <label>True<input type="radio" name="shop" value="True" checked></label>
+                <label>False<input type="radio" name="shop" value="False"></label>
             {% else %}
-                <label>True<input type="checkbox" name="shop" value="True"></label>
-                <label>False<input type="checkbox" name="shop" value="False" checked></label>
+                <label>True<input type="radio" name="shop" value="True"></label>
+                <label>False<input type="radio" name="shop" value="False" checked></label>
             {% endif %}            
         </td>
     </tr>
