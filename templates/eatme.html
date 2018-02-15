@@ -3,29 +3,39 @@
 {% block title %}eat me{% endblock %}
 {% block content %}
 
-<h3>Eat Me</h3>
-<h5>Your foods, ordered by first to expire</h5>
-<h5>(if it's red, it's past the expiration input!)</h5>
+<div class="panel panel-default">
+    <div class="panel-heading">Eat Me</div>
+    <div class="panel-body">
+        <p>Your foods, ordered by first to expire</p>
+    </div>
+    
+    <table class='table table-striped'>
+        <tr>
+            <th>Name</th>
+            <th>Expiration</th>
+            <th>Location</th>
+        </tr>
+        {% for foodstuff in eat_me %}
+        <tr>
+            <td>
+                <a href="/edit/{{ foodstuff[0] }}">{{ foodstuff[1] }}</a>
+            </td>
+            {% if foodstuff[3] > -1 %}
+                <td class="positive">
+                        {{ foodstuff[3] }}
+                </td>
+            {% else %}
+                <td class="negative">
+                        {{ foodstuff[3] }}
+                </td>
+            {% endif %}
+            <td>
+                {{ foodstuff[2] }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
 
-<table>
-    <tr>
-        <th>name</th>
-        <th>expiration</th>
-        <th>location</th>
-    </tr>
-    {% for foodstuff in eat_me %}
-    <tr>
-        <td>
-            <a href="/edit/{{ foodstuff[0] }}">{{ foodstuff[1] }}</a>
-        </td>
-        <td>
-            {{ foodstuff[3] }}
-        </td>
-        <td>
-            {{ foodstuff[2] }}
-        </td>
-    </tr>
-</table> 
-{% endfor %}
 
 {% endblock %}

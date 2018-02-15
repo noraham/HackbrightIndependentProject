@@ -5,22 +5,28 @@
 
 <form action="update" method="POST">
 {% for key, val in pantry.iteritems() %}
-<div><table>
-    <caption>
-        <div class="dropdown">
-          <button class="btn btn-default dropdown-toggle" type="button" id="drop1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            {{ key.location_name }}
-            <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" aria-labelledby="drop1">
-            <li><a href="/update/{{ key.location_id }}">Edit</a></li>
-          </ul>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"></i></span>
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary">
+                {{ key.location_name }}
+                <span class="badge">{{ val|length }}</span>
+            </button>
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+            </button>
+                <ul class="dropdown-menu">
+                    <li><a href="/update/{{ key.location_id }}">Edit</a></li>
+                </ul>
         </div>
-    </caption>
+    </div>
+    <table class='table table-striped table-condensed'>
         <tr>
-            <th>name</th>
-            <th>out of stock</th>
-            <th>add to shopping list</th>
+            <th>Name</th>
+            <th>Out of Stock</th>
+            <th>Add to Shopping List</th>
         </tr>
             {% for each in val %}
                 <tr>
@@ -35,8 +41,8 @@
                     </td>
                 </tr>
             {% endfor %}
-
-</table></div>
+    </table>
+</div>
 {% endfor %}
     <br><br>
     <input type="submit">

@@ -315,15 +315,9 @@ def update_single_foodstuff(pantry_id):
         last_purch = datetime.strptime(last_purch, "%Y-%m-%d")
         current_food_obj.last_purch = last_purch
     if is_pantry:
-        if current_food_obj.is_pantry == True:
-            current_food_obj.is_pantry = False
-        else:
-            current_food_obj.is_pantry = True
+        current_food_obj.is_pantry = is_pantry
     if is_shopping:
-        if current_food_obj.is_shopping == True:
-            current_food_obj.is_shopping = False
-        else:
-            current_food_obj.is_shopping = True
+        current_food_obj.is_shopping = is_shopping
 
     # # For debug
     # print "******************"
