@@ -21,7 +21,7 @@ app.jinja_env.undefined = StrictUndefined
 
 @app.route('/')
 def Log_in_form_display():
-    """Homepage, log in"""
+    """Homepage, log in or register"""
 
     return render_template("homepage.html")
 
@@ -60,12 +60,6 @@ def logout():
     del session["user_id"]
     flash("Logged out")
     return redirect("/")
-
-@app.route('/register')
-def newuser_form_display():
-    """Register page"""
-
-    return render_template("register.html")
 
 @app.route('/register_handle', methods=["POST"])
 def newuser_form_handle():
@@ -390,6 +384,7 @@ def eatme_display():
         temp.append(time_left)
 
         eat_me.append(temp)
+        eat_me.sort(key=lambda x: x[3])
 
     return render_template("eatme.html", eat_me=eat_me)
 
