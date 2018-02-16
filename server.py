@@ -7,6 +7,7 @@ from jinja2 import StrictUndefined
 from flask import (Flask, render_template, redirect, request, flash, session)
 from flask_debugtoolbar import DebugToolbarExtension
 from tablesetup import User, Foodstuff, Location, Barcode, connect_to_db, db
+from collections import OrderedDict
 
 
 app = Flask(__name__)
@@ -216,7 +217,7 @@ def pantry_display():
     """iterate through list of location objects, pulling all foodstuffs that 
     match location id, append to pantry dictionary of 
     location_name:[list of matching foodstuffs]"""
-    pantry = {}
+    pantry = OrderedDict()
     for loc in user_locs:
 
         # Make master list that we can add to, this will become the value
@@ -269,8 +270,9 @@ def edit_item(pantry_id):
     item = Foodstuff.query.get(pantry_id)
     current_user = session["user_id"]
     user_locs = Location.query.filter_by(user_id=current_user).all()
-    # Convert to display format
-    ugly = item.last_purch
+    
+    # Convert to display format, lazy fix for time zone problem, hardcoded to PST
+    ugly = (item.last_purch) + timedelta(hours=-8)
     pretty = ugly.strftime('%b %d, %Y')
 
     return render_template("edit.html", item=item, lp=pretty, user_locs=user_locs)
@@ -379,7 +381,8 @@ def eatme_display():
         # DateTime math to display days until item expires
         last_purch = foodstuff.last_purch
         exp = foodstuff.exp
-        exp_date = last_purch + timedelta(days=exp)
+        # Lazy time zone fix: subtract 8 hours (hardcoded to PST)
+        exp_date = last_purch + timedelta(days=exp, hours=-8)
         time_left = (exp_date - datetime.utcnow()).days
         temp.append(time_left)
 
