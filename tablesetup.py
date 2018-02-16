@@ -15,17 +15,18 @@ class User(db.Model):
     __tablename__ = "users"
 
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    email = db.Column(db.String(50), nullable=False, unique=True)
+    username = db.Column(db.String(50), nullable=False, unique=True)
     pword = db.Column(db.String(150), nullable=False)
     fname = db.Column(db.String(50), nullable=False)
     lname = db.Column(db.String(50), nullable=False)
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    email = db.Column(db.String(50), nullable=False)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
 
     def __repr__(self):
         """display user objects nicely, for debugging"""
-        return "<User id={} email={} name={} {}>".format(self.user_id,
-                                            self.email, self.fname, self.lname)
+        return "<User id={} username={} name={} {}>".format(self.user_id,
+                                            self.username, self.fname, self.lname)
 
 class Foodstuff(db.Model):
     """Pantry item of pantry site"""

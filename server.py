@@ -31,11 +31,11 @@ def log_in_handle():
     """Log user into profile"""
 
     # Get form variables
-    email = request.form["email"]
+    username = request.form["username"]
     pword_input = request.form["password"]
 
-    # Check if email exists in db
-    user = User.query.filter_by(email=email).first()
+    # Check if username exists in db
+    user = User.query.filter_by(username=username).first()
     if not user:
         flash("No such user", 'danger')
         return redirect("/")
@@ -67,25 +67,27 @@ def newuser_form_handle():
     """Add new user to db"""
 
     # Grab from form
-    email = request.form.get("email")
+    username = request.form.get("username")
     password = request.form.get("password")
     fname = request.form.get("fname")
     lname = request.form.get("lname")
+    email = request.form.get("email")
 
     # Transform and auto-create
     password = password.encode('utf8')
     hashed_pword = bcrypt.hashpw(password, bcrypt.gensalt(10))
 
-    # check if email has already been registered
-    tricky_user = User.query.filter_by(email=email).first()
+    # check if username has already been registered
+    tricky_user = User.query.filter_by(username=username).first()
 
     if not tricky_user:
-        # If email is not in system, allow registration
-        new_user = User(email=email, pword=hashed_pword, fname=fname, lname=lname)
+        # If username is not in system, allow registration
+        new_user = User(username=username, pword=hashed_pword, fname=fname,
+                        lname=lname, email=email)
         db.session.add(new_user)
         db.session.commit()
         flash("Successfully registered")
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(username=username).first()
         session["user_id"] = user.user_id
         
         # Initialize these 3 basic locations for a new user
@@ -99,7 +101,7 @@ def newuser_form_handle():
         return redirect('/add')
 
     else:
-        flash("There is already an account linked to this email. Please log in.", 'danger')
+        flash("There is already an account linked to this username. Please log in.", 'danger')
         return redirect('/')
 
 @app.route('/add')

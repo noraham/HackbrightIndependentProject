@@ -15,13 +15,13 @@ def load_users(user_file):
 
     for row in open(user_file):
         row = row.rstrip()
-        email, pword, fname, lname = row.split("|")
+        username, pword, fname, lname, email = row.split("|")
         
         time = datetime.datetime.now()
         hashed_pword = bcrypt.hashpw(pword, bcrypt.gensalt(10))
 
-        user = User(email=email, pword=hashed_pword, fname=fname, lname=lname,
-                    date_created=time)
+        user = User(username=username, pword=hashed_pword, fname=fname, lname=lname,
+                    date_created=time, email=email)
 
         # We need to add to the session or it won't ever be stored
         db.session.add(user)
