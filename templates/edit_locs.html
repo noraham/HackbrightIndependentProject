@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Remote Pantry Item Edit{% endblock %}
+{% block content %}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        Edit Location
+    </div>
+    <div class="panel-body">
+        <form action="/update_loc/{{ loc.location_id }}" method="POST">
+            <div class="form-inline">
+                <label>Name:&nbsp;<input type="text" class="form-control" name="new_name" placeholder="{{ loc.location_name }}"></label>
+            </div>
+            <button type="submit" class="btn btn-default">Update
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
