@@ -85,13 +85,13 @@ class Barcode(db.Model):
 ###############################################################################
 """Helper functions"""
 
-def connect_to_db(app):
+def connect_to_db(app, db_uri="postgresql:///pantry"):
     """Connect the database to Flask"""
 
     # Configure to use PostgreSQL database
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///pantry'
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SQLALCHEMY_ECHO'] = True
+    app.config['SQLALCHEMY_ECHO'] = False
     db.app = app
     db.init_app(app)
 
