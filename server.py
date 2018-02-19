@@ -95,8 +95,10 @@ def newuser_form_handle():
         db.session.add(new_fridge)
         new_freezer = Location(user_id=user.user_id, location_name="Freezer")
         db.session.add(new_freezer)
-        new_shelf = Location(user_id=user.user_id, location_name="Shelf")
+        new_shelf = Location(user_id=user.user_id, location_name="Cupboard")
         db.session.add(new_shelf)
+        new_rack = Location(user_id=user.user_id, location_name="Spice Rack")
+        db.session.add(new_rack)
         db.session.commit()
         return redirect('/add')
 
