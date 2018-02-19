@@ -15,11 +15,49 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 # Required to use Flask sessions and the debug toolbar
 app.secret_key = "secretSECRETsecret"
-
 # Using an undefined variable in Jinja2 raises an error
 app.jinja_env.undefined = StrictUndefined
 
+#######################H#E#L#P#E#R###F#U#N#C#T#I#O#N#S##########################
 
+def get_user_by_uname(username):
+    """takes username, returns user obj from database"""
+
+    user = User.query.filter_by(username=username).first()
+    return user
+
+def is_pword(user, pword_input):
+    """checks input pword against stored pword, takes user obj and pword to 
+    check, returns bool"""
+    pword_in_table = user.pword.encode('utf8')
+    valid_password = (bcrypt.hashpw(pword_input.encode('utf8'),
+                      pword_in_table.encode('utf8')) == pword_in_table)
+    return valid_password
+
+def hash_it(pword):
+    """takes a string, returns hashed string, uses bcrypt"""
+
+    hashed_pword = bcrypt.hashpw(pword.encode('utf8'), bcrypt.gensalt(10))
+    return hashed_pword
+
+def basic_locs(user_id):
+    """takes user id, creates 4 locations for this user in their pantry"""
+
+    new_fridge = Location(user_id=user_id, location_name="Fridge")
+    db.session.add(new_fridge)
+
+    new_freezer = Location(user_id=user_id, location_name="Freezer")
+    db.session.add(new_freezer)
+
+    new_shelf = Location(user_id=user_id, location_name="Cupboard")
+    db.session.add(new_shelf)
+
+    new_rack = Location(user_id=user_id, location_name="Spice Rack")
+    db.session.add(new_rack)
+
+    db.session.commit()
+
+#######################R#O#U#T#E#S##############################################
 @app.route('/')
 def Log_in_form_display():
     """Homepage, log in or register"""
@@ -34,17 +72,15 @@ def log_in_handle():
     username = request.form["username"]
     pword_input = request.form["password"]
 
-    # Check if username exists in db
-    user = User.query.filter_by(username=username).first()
+    # Check if username exists in db, redirect if doesn't exist
+    user = get_user_by_uname(username)
     if not user:
         flash("No such user", 'danger')
         return redirect("/")
 
-    # Transform and check
-    pword_in_table = user.pword
-    valid_password = (bcrypt.hashpw(pword_input.encode('utf8'),
-                      pword_in_table.encode('utf8')) == pword_in_table)
-
+    # Transform and check if pword matches
+    valid_password = is_pword(user, pword_input)
+    
     # Log in or give incorrect pword flash
     if valid_password:
         session["user_id"] = user.user_id
@@ -74,11 +110,10 @@ def newuser_form_handle():
     email = request.form.get("email")
 
     # Transform and auto-create
-    password = password.encode('utf8')
-    hashed_pword = bcrypt.hashpw(password, bcrypt.gensalt(10))
+    hashed_pword = hash_it(password)
 
     # check if username has already been registered
-    tricky_user = User.query.filter_by(username=username).first()
+    tricky_user = get_user_by_uname(username)
 
     if not tricky_user:
         # If username is not in system, allow registration
@@ -87,23 +122,17 @@ def newuser_form_handle():
         db.session.add(new_user)
         db.session.commit()
         flash("Successfully registered")
+
+        # Set up session
         user = User.query.filter_by(username=username).first()
         session["user_id"] = user.user_id
         
-        # Initialize these 3 basic locations for a new user
-        new_fridge = Location(user_id=user.user_id, location_name="Fridge")
-        db.session.add(new_fridge)
-        new_freezer = Location(user_id=user.user_id, location_name="Freezer")
-        db.session.add(new_freezer)
-        new_shelf = Location(user_id=user.user_id, location_name="Cupboard")
-        db.session.add(new_shelf)
-        new_rack = Location(user_id=user.user_id, location_name="Spice Rack")
-        db.session.add(new_rack)
-        db.session.commit()
+        # Initialize 4 basic locations for a new user
+        basic_locs(user.user_id)
         return redirect('/add')
 
     else:
-        flash("There is already an account linked to this username. Please log in.", 'danger')
+        flash("There is already an account linked to this username.", 'danger')
         return redirect('/')
 
 @app.route('/add')
