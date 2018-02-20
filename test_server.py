@@ -14,8 +14,11 @@ class FlaskIntegrationTests(TestCase):
         self.client = app.test_client()
         # This config will print all Flask errors to the console
         app.config['TESTING'] = True
-        # In case we use session info, need secret key
+        # To use session info, need secret key
         app.config['SECRET_KEY'] = 'wowsuchsecret'
+        # fake a user_id in the session so we can get access to pages where this is required
+        with self.client.session_transaction() as sess:
+            sess['user_id'] = 1
         
         # Connect to test database (must have 'createdb testdb' already!)
         connect_to_db(app, "postgresql:///testdb")
@@ -110,10 +113,6 @@ class FlaskIntegrationTests(TestCase):
 
     def test_logout(self):
         """Test that user can logout, checks flash"""
-
-        # fake a user_id in the session, required in header to perform logout
-        with self.client.session_transaction() as sess:
-            sess['user_id'] = 1
 
         result = self.client.get("logout", follow_redirects=True)
         self.assertIn("Logged out", result.data)
