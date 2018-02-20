@@ -4,7 +4,7 @@ from server import app
 from tablesetup import connect_to_db, db
 from seed import load_users, load_locations, load_items
 
-class IntegrationTests(TestCase):
+class FlaskIntegrationTests(TestCase):
     """Integration tests for Remote Pantry
         Don't forget to start all function names with test!"""
 
@@ -32,6 +32,7 @@ class IntegrationTests(TestCase):
     def tearDown(self):
         """runs after each test, deletes test data from database"""
 
+        db.session.remove()
         db.session.close()
         db.drop_all()
 
@@ -116,8 +117,6 @@ class IntegrationTests(TestCase):
 
         result = self.client.get("logout", follow_redirects=True)
         self.assertIn("Logged out", result.data)
-        # How do I check the session?
-
 
 # Run all tests if we run this file
 if __name__ == "__main__":

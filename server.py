@@ -4,10 +4,11 @@ from datetime import datetime, timedelta
 import bcrypt
 
 from jinja2 import StrictUndefined
-from flask import (Flask, render_template, redirect, request, flash, session)
+from flask import (Flask, render_template, redirect, request, flash, session, g)
 from flask_debugtoolbar import DebugToolbarExtension
 from tablesetup import User, Foodstuff, Location, Barcode, connect_to_db, db
 from collections import OrderedDict
+from functools import wraps
 
 
 app = Flask(__name__)
@@ -19,6 +20,18 @@ app.secret_key = "secretSECRETsecret"
 app.jinja_env.undefined = StrictUndefined
 
 #######################H#E#L#P#E#R###F#U#N#C#T#I#O#N#S##########################
+
+def login_required(f):
+    """view decorator, wrap any functions where user must be logged in to view page.
+       If not logged in, user is redirected home + flash message to log in"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("user_id") is None:
+            flash("Please log in or register.", 'danger')
+            return redirect("/")
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 def get_user_by_uname(username):
     """takes username, returns user obj from database"""
@@ -57,6 +70,13 @@ def basic_locs(user_id):
 
     db.session.commit()
 
+def get_locs(user_id):
+    """takes user id, returns list of user's location objects"""
+
+    locs = Location.query.filter_by(user_id=user_id).order_by(Location.location_name).all()
+    return locs
+    
+
 #######################R#O#U#T#E#S##############################################
 @app.route('/')
 def Log_in_form_display():
@@ -91,6 +111,7 @@ def log_in_handle():
         return redirect("/")
 
 @app.route('/logout')
+@login_required
 def logout():
     """Log out of site"""
 
@@ -136,16 +157,19 @@ def newuser_form_handle():
         return redirect('/')
 
 @app.route('/add')
+@login_required
 def foodstuff_form_display():
     """Display add form"""
 
     current_user = session["user_id"]
+
     # Pull and pass user's locations for radio buttons
-    user_locs = Location.query.filter_by(user_id=current_user).all()
+    user_locs = get_locs(current_user)
 
     return render_template("add.html", user_locs=user_locs)
 
 @app.route('/add_item', methods=["POST"])
+@login_required
 def add_foodstuff():
     """add a new foodstuff"""
 
@@ -190,6 +214,7 @@ def add_foodstuff():
     return redirect('/add')
 
 @app.route('/add_loc', methods=["POST"])
+@login_required
 def add_location():
     """add a new location"""
 
@@ -218,6 +243,7 @@ def add_location():
         return redirect('/add')
 
 @app.route('/update/<int:location_id>')
+@login_required
 def update_location_form(location_id):
     """Display form to update location name"""
 
@@ -226,6 +252,7 @@ def update_location_form(location_id):
     return render_template('edit_locs.html', loc=loc)
 
 @app.route('/update_loc/<int:location_id>', methods=["POST"])
+@login_required
 def update_location(location_id):
     """change location_name"""
 
@@ -240,12 +267,13 @@ def update_location(location_id):
     return redirect("/pantry")
 
 @app.route('/pantry')
+@login_required
 def pantry_display():
     """Display pantry from database"""
 
     # Generate a list of user's location objects
-    current_user = session["user_id"]
-    user_locs = Location.query.filter_by(user_id=current_user).order_by(Location.location_name).all()
+    current_user = session['user_id']
+    user_locs = get_locs(current_user)
 
     """iterate through list of location objects, pulling all foodstuffs that 
     match location id, append to pantry dictionary of 
@@ -275,9 +303,10 @@ def pantry_display():
     return render_template("pantry.html", pantry=pantry)
 
 @app.route('/update', methods=["POST"])
+@login_required
 def update_foodstuff():
     """update foodstuff item is_pantry and/or is_shopping in database"""
-
+    
     # Grab from form
     empties = request.form.getlist("empty")
     refills = request.form.getlist("refill")
@@ -296,13 +325,14 @@ def update_foodstuff():
     return redirect('/pantry')
 
 @app.route('/edit/<int:pantry_id>')
+@login_required
 def edit_item(pantry_id):
     """Display every field about a pantry item, with option to update any field"""
 
     # Grab from database   
     item = Foodstuff.query.get(pantry_id)
-    current_user = session["user_id"]
-    user_locs = Location.query.filter_by(user_id=current_user).all()
+    current_user = session['user_id']
+    user_locs = get_locs(current_user)
     
     # Convert to display format, lazy fix for time zone problem, hardcoded to PST
     ugly = (item.last_purch) + timedelta(hours=-8)
@@ -311,6 +341,7 @@ def edit_item(pantry_id):
     return render_template("edit.html", item=item, lp=pretty, user_locs=user_locs)
 
 @app.route('/update/<int:pantry_id>', methods=["POST"])
+@login_required
 def update_single_foodstuff(pantry_id):
     """update any field on a single foodstuff item"""
 
@@ -367,6 +398,7 @@ def update_single_foodstuff(pantry_id):
 
 
 @app.route('/shop')
+@login_required
 def store_form_display():
     """Display shopping list form"""
 
@@ -378,6 +410,7 @@ def store_form_display():
     return render_template("store.html", shopping_list=shopping_list)
 
 @app.route('/restock', methods=["POST"])
+@login_required
 def restock_foodstuff():
     """update foodstuff item"""
 
@@ -395,11 +428,12 @@ def restock_foodstuff():
     return redirect('/shop')
 
 @app.route('/eatme')
+@login_required
 def eatme_display():
     """Display eatme"""
 
     # Grab all user's items with an exp
-    current_user = session["user_id"]
+    current_user = session['user_id']
     with_exp = Foodstuff.query.filter(Foodstuff.user_id == current_user,
                                               Foodstuff.exp != None).all()    
     # Master list of lists, to be passed to template
