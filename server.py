@@ -166,6 +166,14 @@ def make_pantry(user_id):
         pantry[loc] = items
     return pantry
 
+def make_new_user(uname, pword, fname, lname, email):
+    """instantiate a User, add to db"""
+
+    new_user = User(username=uname, pword=pword, fname=fname,
+                        lname=lname, email=email)
+    db.session.add(new_user)
+    db.session.commit()
+
 
 #######################R#O#U#T#E#S##############################################
 @app.route('/')
@@ -228,10 +236,11 @@ def newuser_form_handle():
 
     if not tricky_user:
         # If username is not in system, allow registration
-        new_user = User(username=username, pword=hashed_pword, fname=fname,
-                        lname=lname, email=email)
-        db.session.add(new_user)
-        db.session.commit()
+        make_new_user(username, hashed_pword, fname, lname, email)
+        # new_user = User(username=username, pword=hashed_pword, fname=fname,
+        #                 lname=lname, email=email)
+        # db.session.add(new_user)
+        # db.session.commit()
         flash("Successfully registered")
 
         # Set up session
