@@ -1,8 +1,15 @@
 from unittest import TestCase
 # import doctest
-from server import app
-from tablesetup import connect_to_db, db
+from server import app, get_user_by_uname
+from tablesetup import connect_to_db, db, Foodstuff, User, Location
 from seed import load_users, load_locations, load_items
+
+# class UnitTests(TestCase):
+#     """Test the remote pantry functions"""
+
+#     def test_get_user_by_uname(self):
+#         assert get_user_by_uname("test1")
+
 
 class FlaskIntegrationTests(TestCase):
     """Integration tests for Remote Pantry
@@ -33,7 +40,7 @@ class FlaskIntegrationTests(TestCase):
         load_items(food_file)
 
     def tearDown(self):
-        """runs after each test, deletes test data from database"""
+        """runs after each test, deletes test database"""
 
         db.session.remove()
         db.session.close()
@@ -114,8 +121,113 @@ class FlaskIntegrationTests(TestCase):
     def test_logout(self):
         """Test that user can logout, checks flash"""
 
-        result = self.client.get("logout", follow_redirects=True)
+        result = self.client.get("/logout", follow_redirects=True)
         self.assertIn("Logged out", result.data)
+
+    def test_add_foodstuff_noexp(self):
+        """Test that user can add items to pantry and shopping, no exp
+           Checks flash and redirect."""
+
+        food_info = {'pantry': "True", 'shop': "True",
+                    'name': 'test item no exp', 'location': '3', 'exp': ''}
+
+        result = self.client.post("/add_item", data=food_info,
+                                  follow_redirects=True)
+        self.assertIn("Successfully added", result.data)
+        self.assertIn("<h3>Add a new item to the pantry:</h3>", result.data)
+        # assert user in db.session
+                    
+
+    def test_add_foodstuff_exp(self):
+        """Test that user can add items to pantry and shopping, with exp
+           (don't forget that exp and location come in as strings)"""
+
+        food_info = {'pantry': "True", 'shop': "True",
+                    'name': 'test item with exp', 'location': '3',
+                    'exp': '10'}
+ 
+        result = self.client.post("/add_item", data=food_info,
+                                  follow_redirects=True)
+        self.assertIn("Successfully added", result.data)
+        self.assertIn("<h3>Add a new item to the pantry:</h3>", result.data)
+
+    def test_add_foodstuff(self):
+        """Test sqlalchemy db function: add and query"""
+
+        # import pdb; pdb.set_trace()
+
+        food_test = Foodstuff(user_id=1, name='add test', is_pantry=True, is_shopping=False, location_id=1, exp=None)
+
+        db.session.add(food_test)
+        db.session.commit()
+
+        self.assertTrue(Foodstuff.query.filter_by(name='add test').first() is not None)
+
+    def test_no_dupe_locs(self):
+        """Test that duplicate location name is rejected"""
+
+        loc = {'loc': "Fridge"}
+
+        result = self.client.post("/add_loc", data=loc,
+                                  follow_redirects=True)
+        self.assertIn("Whoops! That location already exists in your pantry!", result.data)
+
+    def test_pantry_page_display(self):
+        """Test that pantry page displays: table renders and all food items 
+           from this user are being displayed"""
+
+        result = self.client.get("/pantry")
+        self.assertIn("<th>Out of Stock</th>", result.data)
+        self.assertIn("milk", result.data)
+        self.assertIn("eggs", result.data)
+        self.assertIn("peppercorns", result.data)
+
+    def test_edit_page_display(self):
+        """Test that edit page renders"""
+
+        item_info = {'pantry_id': 3}
+
+        result = self.client.get("/edit/3", data=item_info, follow_redirects=True)
+        self.assertIn("peppercorns", result.data)
+
+    def test_loc_name_update(self):
+        """Test that location name can be updated, checks redirect"""
+
+        loc = {'new_name': "Frigidaire", 'location_id': 1}
+
+        result = self.client.post("/update_loc/1", data=loc,
+                                  follow_redirects=True)
+        self.assertIn("<th>Out of Stock</th>", result.data)
+
+    def test_store_page(self):
+        """move an item onto shopping list and check that it displays"""
+
+        init_result = self.client.get("/shop", follow_redirects=True)
+        self.assertNotIn("peppercorns", init_result.data) 
+
+        foodobj_to_change = Foodstuff.query.filter_by(user_id=1,
+                                              name='peppercorns').first()
+        foodobj_to_change.is_shopping = True
+        db.session.commit()
+
+        result = self.client.get("/shop", follow_redirects=True)
+        self.assertIn("peppercorns", result.data)        
+
+    def test_refill(self):
+        """Test that refill page rendtes and redirects"""
+
+        refill = {'refill': 3}
+
+        result = self.client.post("/restock", data=refill,
+                                  follow_redirects=True)
+        self.assertIn("Shopping List", result.data)
+
+    def test_eatme(self):
+        """Test that refill page rendtes and redirects"""
+
+        result = self.client.get("/eatme", follow_redirects=True)
+        self.assertIn("<p>Your foods, ordered by first to expire</p>", result.data)
+
 
 # Run all tests if we run this file
 if __name__ == "__main__":
