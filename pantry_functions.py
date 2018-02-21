@@ -30,7 +30,7 @@ def get_user_by_uname(username):
     return user
 
 def is_pword(user, pword_input):
-    """checks input pword against stored pword, takes user obj and pword to 
+    """checks input pword against stored pword. Takes user obj and pword to 
     check, returns bool"""
     
     pword_in_table = user.pword.encode('utf8')
@@ -110,9 +110,9 @@ def refilled(refills, exp, pan_id):
        keep exp if any, or update exp"""
 
     """Exp is optional, use what's in db if we have a value, else leave blank
-       make a dictionary of id:exp values. caution: hidden value (therefore 
-       entry in this dict is for all items on page, not just items user has
-       toggled to refill. Therefore, go by refills list, use this dict to fill in exp"""
+       make a dictionary of id:exp values. caution: hidden value entry in this 
+       dict is for all items on page, not just items user has toggled to refill.
+       Therefore, go by refills list, use this dict to fill in exp"""
     exp_updates = {}
     for expi, pantry_id in zip(exp, pan_id):
         if not expi:
@@ -127,7 +127,7 @@ def refilled(refills, exp, pan_id):
         to_update.is_shopping = False
         to_update.last_purch = datetime.utcnow()
         to_update.exp = exp_updates[item]
-        
+
     db.session.commit()
 
 def out_of_stock(empties):
@@ -182,3 +182,5 @@ def make_new_user(uname, pword, fname, lname, email):
                         lname=lname, email=email)
     db.session.add(new_user)
     db.session.commit()
+
+# Total = 13

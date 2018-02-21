@@ -6,6 +6,7 @@ from sqlalchemy import func
 from tablesetup import User, Foodstuff, Location, Barcode, connect_to_db, db
 from server import app
 import bcrypt
+from pantry_functions import hash_it
 
 
 def load_users(user_file):
@@ -16,7 +17,7 @@ def load_users(user_file):
         username, pword, fname, lname, email = row.split("|")
         
         time = datetime.datetime.now()
-        hashed_pword = bcrypt.hashpw(pword, bcrypt.gensalt(10))
+        hashed_pword = hash_it(pword)
 
         user = User(username=username, pword=hashed_pword, fname=fname, lname=lname,
                     date_created=time, email=email)
