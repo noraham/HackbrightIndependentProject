@@ -9,6 +9,10 @@ from flask_debugtoolbar import DebugToolbarExtension
 from tablesetup import User, Foodstuff, Location, Barcode, connect_to_db, db
 from collections import OrderedDict
 from functools import wraps
+from pantry_functions import (login_required, get_user_by_uname, is_pword,
+                              hash_it, basic_locs, get_locs, eatme_generator,
+                              get_shop_lst, refilled, out_of_stock, to_refill,
+                              make_pantry, make_new_user)
 
 
 app = Flask(__name__)
@@ -19,165 +23,8 @@ app.secret_key = "secretSECRETsecret"
 # Using an undefined variable in Jinja2 raises an error
 app.jinja_env.undefined = StrictUndefined
 
-#######################H#E#L#P#E#R###F#U#N#C#T#I#O#N#S##########################
-
-def login_required(f):
-    """view decorator, wrap any functions where user must be logged in to view page.
-       If not logged in, user is redirected home + flash message to log in"""
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if session.get("user_id") is None:
-            flash("Please log in or register.", 'danger')
-            return redirect("/")
-        return f(*args, **kwargs)
-    return decorated_function
-
-
-def get_user_by_uname(username):
-    """takes username, returns user obj from database"""
-
-    user = User.query.filter_by(username=username).first()
-    return user
-
-def is_pword(user, pword_input):
-    """checks input pword against stored pword, takes user obj and pword to 
-    check, returns bool"""
-    pword_in_table = user.pword.encode('utf8')
-    valid_password = (bcrypt.hashpw(pword_input.encode('utf8'),
-                      pword_in_table.encode('utf8')) == pword_in_table)
-    return valid_password
-
-def hash_it(pword):
-    """takes a string, returns hashed string, uses bcrypt"""
-
-    hashed_pword = bcrypt.hashpw(pword.encode('utf8'), bcrypt.gensalt(10))
-    return hashed_pword
-
-def basic_locs(user_id):
-    """takes user id, creates 4 locations for this user in their pantry"""
-
-    new_fridge = Location(user_id=user_id, location_name="Fridge")
-    db.session.add(new_fridge)
-
-    new_freezer = Location(user_id=user_id, location_name="Freezer")
-    db.session.add(new_freezer)
-
-    new_shelf = Location(user_id=user_id, location_name="Cupboard")
-    db.session.add(new_shelf)
-
-    new_rack = Location(user_id=user_id, location_name="Spice Rack")
-    db.session.add(new_rack)
-
-    db.session.commit()
-
-def get_locs(user_id):
-    """takes user id, returns list of user's location objects"""
-
-    locs = Location.query.filter_by(user_id=user_id).order_by(Location.location_name).all()
-    return locs
-
-def eatme_generator(user_id):
-    """takes user id, returns list of all items with expiry, sorted"""
-    
-    # Grab all user's foodstuffs with an exp
-    with_exp = Foodstuff.query.filter(Foodstuff.user_id == user_id,
-                                      Foodstuff.exp != None,
-                                      Foodstuff.is_pantry == True).all()    
-    # Master list of lists, to be passed to template
-    eat_me = []
-    for foodstuff in with_exp:
-        # Inner list that will be appended to master list
-        temp = []
-        temp.append(foodstuff.pantry_id)
-        temp.append(foodstuff.name)
-        temp.append(foodstuff.location.location_name)
-
-        # DateTime math to display days until item expires
-        last_purch = foodstuff.last_purch
-        exp = foodstuff.exp
-        # Lazy time zone fix: subtract 8 hours (hardcoded to PST)
-        exp_date = last_purch + timedelta(days=exp, hours=-8)
-        time_left = (exp_date - datetime.utcnow()).days
-        temp.append(time_left)
-
-        eat_me.append(temp)
-        # sort by time_left
-        eat_me.sort(key=lambda x: x[3])
-
-    return eat_me
-
-def get_shop_lst(user_id):
-    """takes user id, generates list of foodstuff objects that have been 
-       placed on the shopping list"""
-
-    shopping_list = Foodstuff.query.filter_by(user_id=user_id,
-                                              is_shopping=True).all()
-    return shopping_list
-
-def refilled(refills):
-    # Remove from shopping list, change pantry status, update last_purch
-    for item in refills:
-        to_update = Foodstuff.query.get(item)
-        to_update.is_pantry = True
-        to_update.is_shopping = False
-        to_update.last_purch = datetime.utcnow()
-    db.session.commit()
-
-def out_of_stock(empties):
-    """Update item's is_pantry value"""
-    for item in empties:
-        to_update = Foodstuff.query.get(item)
-        to_update.is_pantry = False
-    db.session.commit()
-
-def to_refill(refills):
-    """Update item's is_shopping value"""
-    for item in refills:
-        to_update = Foodstuff.query.get(item)
-        to_update.is_shopping = True
-    db.session.commit()
-
-def make_pantry(user_id):
-    """iterate through list of location objects, pulling all foodstuffs that
-       match location id, append to pantry dictionary of
-       location_name:[list of matching foodstuffs]"""
-    
-    user_locs = get_locs(user_id)
-    pantry = OrderedDict()
-
-    for loc in user_locs:
-        # Make master list that we can add to, this will become the value
-        items = []
-        # Make a list of all foods objects in this location
-        item_list = Foodstuff.query.filter_by(location_id=loc.location_id,
-                    user_id=user_id, is_pantry=True).order_by(Foodstuff.name).all()
-
-        """Make a list of a food object's name and id, append this list to the
-        master list"""
-        for each in item_list:
-            temp = []
-            temp.append(each.name)
-            temp.append(each.pantry_id)
-            items.append(temp)
-
-        """Master list is now a list of lists, the internal lists have only the 
-        foodstuff info our page needs, this master list becomes the value in 
-        the pantry dictionary, where key is name of location."""
-        pantry[loc] = items
-    return pantry
-
-def make_new_user(uname, pword, fname, lname, email):
-    """instantiate a User, add to db"""
-
-    new_user = User(username=uname, pword=pword, fname=fname,
-                        lname=lname, email=email)
-    db.session.add(new_user)
-    db.session.commit()
-
-
-#######################R#O#U#T#E#S##############################################
 @app.route('/')
-def Log_in_form_display():
+def log_in_form_display():
     """Homepage, log in or register"""
 
     return render_template("homepage.html")
@@ -198,7 +45,7 @@ def log_in_handle():
 
     # Transform and check if pword matches
     valid_password = is_pword(user, pword_input)
-    
+
     # Log in or give incorrect pword flash
     if valid_password:
         session["user_id"] = user.user_id
@@ -237,16 +84,12 @@ def newuser_form_handle():
     if not tricky_user:
         # If username is not in system, allow registration
         make_new_user(username, hashed_pword, fname, lname, email)
-        # new_user = User(username=username, pword=hashed_pword, fname=fname,
-        #                 lname=lname, email=email)
-        # db.session.add(new_user)
-        # db.session.commit()
         flash("Successfully registered")
 
         # Set up session
         user = User.query.filter_by(username=username).first()
         session["user_id"] = user.user_id
-        
+
         # Initialize 4 basic locations for a new user
         basic_locs(user.user_id)
         return redirect('/add')
@@ -272,15 +115,12 @@ def foodstuff_form_display():
 def add_foodstuff():
     """add a new foodstuff"""
 
-    # import pdb; pdb.set_trace()
-
     # Grab from form
     is_pantry = request.form.get("pantry")
     is_shopping = request.form.get("shop")
     name = request.form.get("name")
     location = request.form.get("location")
     exp = request.form.get("exp")
-    # print '\n\n\n', request.form, '\n\n\n'
     # exp is optional, if left blank it comes in as empty string, needs convert
     if not exp:
         exp = None
@@ -291,18 +131,10 @@ def add_foodstuff():
     if is_shopping == None:
         is_shopping = False
     current_user = session["user_id"]
-    # location = int(location)
-
-    # # For debug
-    # print current_user, type(current_user)
-    # print name, type(name)
-    # print is_pantry, is_shopping
-    # print location, type(location)
-    # print exp, type(exp)
 
     new_item = Foodstuff(user_id=current_user, name=name, is_pantry=is_pantry,
-                     is_shopping=is_shopping, location_id=location, exp=exp)
-    
+                         is_shopping=is_shopping, location_id=location, exp=exp)
+
     db.session.add(new_item)
     db.session.commit()
 
@@ -319,10 +151,6 @@ def add_location():
 
     #Transform and auto-create
     current_user = session["user_id"]
-
-    # For debug
-    # print current_user, type(current_user)
-    # print loc, type(loc)
 
     # Check if a location with this name already exists
     tricky_user = Location.query.filter_by(user_id=current_user, location_name=loc).first()
@@ -367,35 +195,8 @@ def update_location(location_id):
 def pantry_display():
     """Display pantry from database"""
 
-    # Generate a list of user's location objects
     current_user = session['user_id']
     pantry = make_pantry(current_user)
-    # user_locs = get_locs(current_user)
-
-    # """iterate through list of location objects, pulling all foodstuffs that 
-    # match location id, append to pantry dictionary of 
-    # location_name:[list of matching foodstuffs]"""
-    # pantry = OrderedDict()
-    # for loc in user_locs:
-
-    #     # Make master list that we can add to, this will become the value
-    #     items = []
-    #     # Make a list of all foods objects in this location
-    #     item_list = Foodstuff.query.filter_by(location_id=loc.location_id,
-    #                 user_id=current_user, is_pantry=True).order_by(Foodstuff.name).all()
-
-    #     """Make a list of a food object's name and id, append this list to the
-    #     master list"""
-    #     for each in item_list:
-    #         temp = []
-    #         temp.append(each.name)
-    #         temp.append(each.pantry_id)
-    #         items.append(temp)
-
-    #     """Master list is now a list of lists, the internal lists have only the 
-    #     foodstuff info our page needs, this master list becomes the value in 
-    #     the pantry dictionary, where key is name of location."""
-    #     pantry[loc] = items
 
     return render_template("pantry.html", pantry=pantry)
 
@@ -403,24 +204,14 @@ def pantry_display():
 @login_required
 def update_foodstuff():
     """update foodstuff item is_pantry and/or is_shopping in database"""
-    
+
     # Grab from form
     empties = request.form.getlist("empty")
     refills = request.form.getlist("refill")
 
     out_of_stock(empties)
     to_refill(refills)
-    # # Update item's is_pantry value
-    # for item in empties:
-    #     to_update = Foodstuff.query.get(item)
-    #     to_update.is_pantry = False
 
-    # # Update item's is_shopping value
-    # for item in refills:
-    #     to_update = Foodstuff.query.get(item)
-    #     to_update.is_shopping = True
-
-    # db.session.commit()
     return redirect('/pantry')
 
 @app.route('/edit/<int:pantry_id>')
@@ -428,11 +219,11 @@ def update_foodstuff():
 def edit_item(pantry_id):
     """Display every field about a pantry item, with option to update any field"""
 
-    # Grab from database   
+    # Grab from database
     item = Foodstuff.query.get(pantry_id)
     current_user = session['user_id']
     user_locs = get_locs(current_user)
-    
+
     # Convert to display format, lazy fix for time zone problem, hardcoded to PST
     ugly = (item.last_purch) + timedelta(hours=-8)
     pretty = ugly.strftime('%b %d, %Y')
@@ -478,18 +269,6 @@ def update_single_foodstuff(pantry_id):
     if is_shopping:
         current_food_obj.is_shopping = is_shopping
 
-    # # For debug
-    # print "******************"
-    # print pantry_id, type(pantry_id)
-    # # print current_user, type(current_user)
-    # print name, type(name)
-    # print is_pantry, is_shopping
-    # print location, type(location)
-    # print exp, type(exp)
-    # print last_purch, type(last_purch)
-    # print description, type(description)
-    # print "******************"
-    
     db.session.commit()
 
     flash("Your item has been updated")
@@ -504,8 +283,6 @@ def store_form_display():
     # Grab all user's items with is_shopping status
     current_user = session["user_id"]
     shopping_list = get_shop_lst(current_user)
-    # shopping_list = Foodstuff.query.filter_by(user_id=current_user,
-    #                                           is_shopping=True).all()
 
     return render_template("store.html", shopping_list=shopping_list)
 
@@ -516,16 +293,11 @@ def restock_foodstuff():
 
     # Grab from form
     refills = request.form.getlist("refill")
-    refilled(refills)
+    exp = request.form.getlist("exp")
+    pan_id = request.form.getlist("hidden_id")
+    
+    refilled(refills, exp, pan_id)
 
-    # # Remove from shopping list, change pantry status, update last_purch
-    # for item in refills:
-    #     to_update = Foodstuff.query.get(item)
-    #     to_update.is_pantry = True
-    #     to_update.is_shopping = False
-    #     to_update.last_purch = datetime.utcnow()
-
-    # db.session.commit()
     return redirect('/shop')
 
 @app.route('/eatme')
@@ -536,27 +308,6 @@ def eatme_display():
     # Grab all user's items with an exp
     current_user = session['user_id']
     eat_me = eatme_generator(current_user)
-    # with_exp = Foodstuff.query.filter(Foodstuff.user_id == current_user,
-    #                                           Foodstuff.exp != None).all()    
-    # # Master list of lists, to be passed to template
-    # eat_me = []
-    # for foodstuff in with_exp:
-    #     # Inner list that will be appended to master list
-    #     temp = []
-    #     temp.append(foodstuff.pantry_id)
-    #     temp.append(foodstuff.name)
-    #     temp.append(foodstuff.location.location_name)
-
-    #     # DateTime math to display days until item expires
-    #     last_purch = foodstuff.last_purch
-    #     exp = foodstuff.exp
-    #     # Lazy time zone fix: subtract 8 hours (hardcoded to PST)
-    #     exp_date = last_purch + timedelta(days=exp, hours=-8)
-    #     time_left = (exp_date - datetime.utcnow()).days
-    #     temp.append(time_left)
-
-    #     eat_me.append(temp)
-    #     eat_me.sort(key=lambda x: x[3])
 
     return render_template("eatme.html", eat_me=eat_me)
 
