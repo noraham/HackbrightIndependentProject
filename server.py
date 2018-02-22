@@ -269,6 +269,7 @@ def update_single_foodstuff(pantry_id):
     if is_shopping:
         current_food_obj.is_shopping = is_shopping
 
+    db.session.add(current_food_obj)
     db.session.commit()
 
     flash("Your item has been updated")
