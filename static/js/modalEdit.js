@@ -10,8 +10,8 @@ function locationEditDisplay(evt) {
     let locId = $(this).data("locid");
     let locName = $(this).data("locname");
 
-    $('input').attr('placeholder', locName);
-    $('button').attr('data-locid', locId);
+    $('#new_name').attr('placeholder', locName);
+    $('#locSubmit').attr('data-locid', locId);
     $("#locform").show();
 }
 
@@ -20,11 +20,13 @@ $(".locEventListener").on('click', locationEditDisplay);
 
 // listener and functions to handle LOCATION form submission - update db and change view
 function updatePantryPage(result) {
-    alert(result);
+    $("#new_name").val("");
+    let locId = result.locId;
+    $("#locname-"+locId).html(result.newName);
 }
 
 function locationUpdate(evt) {
-    evt.preventDefault();
+    // evt.preventDefault();
 
     let locId = $(this).data("locid");
     let new_name = $("#new_name").val()
@@ -35,11 +37,9 @@ function locationUpdate(evt) {
     console.log(formInput)
 
     $.post("/updatelocationformhandle", formInput, updatePantryPage)
-    $(".locEventListener").html(new_name);
-    // move this to upper function?
 }
 
-$(".locSubmit").on('click', locationUpdate);
+$("#locSubmit").on('click', locationUpdate);
 
 
 // need to clear modal between clicks, NOT WORKING
@@ -49,17 +49,35 @@ $('locEditModal').on('hidden.bs.modal', function () {
 
 
 // Listener and function to display FOOD form in modal
+function foodEditPrefills(results) {
+    // $('#new_name').attr('placeholder', locName);
+    $('#nameField').attr('placeholder', results.itemName);
+    if(results.isPantry == true) {
+        console.log("pantry is true")
+        $('#stockTrue').prop('checked', 'true').trigger("click");
+    }
+    else {
+        $('#stockFalse').prop('checked', "true").trigger("click");
+    }
+    // $("#foodform").show();
+}
+
+
 function foodEditDisplay(evt) {
-    console.log("Hi");
     let itemId = $(this).data("itemid");
     let itemName = $(this).data("itemname");
-    console.log(itemId);
-    console.log(itemName);
+
+    let formInput = {
+        "pantry_id": itemId
+    }
+    console.log(formInput)
+
+    $.get("/editpantryitem", formInput, foodEditPrefills)
 
     // $("#foodform").show();
 }
 
-$("#foodEditModal").on('click', foodEditDisplay);
+$(".editFoodLink").on('click', foodEditDisplay);
 
 // listener and functions to handle FOOD form submission - update db and change view
 function updatePantryPageFood(result) {

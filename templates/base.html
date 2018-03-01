@@ -43,6 +43,7 @@
         <li {% if active_page == 'add' %} class="active" {% endif %}><a href="/add">Add</a></li>
         <li {% if active_page == 'store' %} class="active" {% endif %}><a href="/shop">@Store</a></li>
         <li {% if active_page == 'eatme' %} class="active" {% endif %}><a href="/eatme">EatMe</a></li>
+        <li {% if active_page == 'map' %} class="active" {% endif %}><a href="/map">Map</a></li>
       </ul>
       <form class="navbar-form navbar-right">
         {% if "user_id" in session %}

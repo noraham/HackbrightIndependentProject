@@ -192,7 +192,7 @@ def update_location():
     to_update.location_name = new_name
     db.session.commit()
 
-    return "updated"
+    return jsonify({"locId": location_id, "newName": new_name})
 
 @app.route('/pantry')
 @login_required
@@ -218,23 +218,40 @@ def update_foodstuff():
 
     return redirect('/pantry')
 
-@app.route('/edit/<int:pantry_id>')
+@app.route('/editpantryitem')
 @login_required
-def edit_item(pantry_id):
+def edit_item():
     """Display every field about a pantry item, with option to update any field"""
+
+    pantry_id = request.args.get("pantry_id")
 
     # Grab from database
     item = Foodstuff.query.get(pantry_id)
     current_user = session['user_id']
     user_locs = get_locs(current_user)
 
+    # Need to put user_locs into not-object form for jsonify
+    loc_lst = [] # This will be a list of lists, inner list will be [id, name]
+    for loc in user_locs:
+        temp = []
+        temp.append(loc.location_id)
+        temp.append(loc.location_name)
+        loc_lst.append(temp)
+
+
     # Convert to display format, lazy fix for time zone problem, hardcoded to PST
     ugly = (item.last_purch) + timedelta(hours=-8)
     pretty = ugly.strftime('%b %d, %Y')
 
-    return render_template("edit.html", item=item, lp=pretty, user_locs=user_locs)
+    return jsonify({"pantryId": item.pantry_id, "userId": item.user_id,
+                    "itemName": item.name,
+                    "isShopping": item.is_shopping, "isPantry": item.is_pantry,
+                    "lastPurch": pretty, "firstAdd": item.first_add,
+                    "locationId": item.location_id, "exp": item.exp,
+                    "description": item.description, "barcodeId": item.barcode_id,
+                    "userLocs": loc_lst})
 
-@app.route('/update/<int:pantry_id>', methods=["POST"])
+@app.route('/updatepantryitem', methods=["POST"])
 @login_required
 def update_single_foodstuff(pantry_id):
     """Update any field on a single foodstuff item"""
@@ -315,6 +332,13 @@ def eatme_display():
     eat_me = eatme_generator(current_user)
 
     return render_template("eatme.html", eat_me=eat_me)
+
+@app.route('/map')
+@login_required
+def map_display():
+    """Display google map, centered on user's location"""
+
+    return render_template("map.html")
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
