@@ -19,9 +19,31 @@
                 </div>
           </div>
           <div class="modal-footer">
-            <button data-test="test" data-dismiss="modal" type="submit" class="btn btn-primary locSubmit">Update</button>
+            <button data-dismiss="modal" type="submit" class="btn btn-primary locSubmit">Update</button>
             </form>
           </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Foodstuff Edit Modal -->
+<div class="modal fade" id="foodEditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Edit Item</h4>
+      </div>
+      <div id="foodform">
+          <div class="modal-body">
+
+          </div>
+          <div class="modal-footer">
+            <button data-dismiss="modal" type="submit" class="btn btn-primary foodSubmit">Update</button>
+        <!-- </form> -->
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -42,6 +64,11 @@
                 </button>
             </a>
         </div>
+        <div class="btn-group">
+            <button type="button" class="btn btn-success">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            </button>
+        </div>
     </div>
     <div class="panel-body">
     <table class='table table-striped table-condensed'>
@@ -53,7 +80,7 @@
             {% for each in val %}
                 <tr>
                     <td>
-                        <a href="/edit/{{ each[1] }}">{{ each[0] }}</a>
+                        <a href="#foodEditModal" data-toggle="modal" data-itemid="{{ each[1] }}" data-itemname="{{ each[0] }}">{{ each[0] }}</a>
                     </td>
                     <td>
                         <input type="checkbox" name="empty" data-toggle="toggle" data-on="Empty" data-off=" " data-size="mini" value="{{ each[1] }}">
