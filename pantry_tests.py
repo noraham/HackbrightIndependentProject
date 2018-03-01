@@ -27,14 +27,14 @@ class UnitTests(TestCase):
         load_items(food_file)
 
     def tearDown(self):
-        """runs after each test, deletes test database"""
+        """Runs after each test, deletes test database"""
 
         db.session.remove()
         db.session.close()
         db.drop_all()
 
     def test_get_user_by_uname(self):
-        """takes username, returns user obj from database, this test returns
+        """Takes username, returns user obj from database, this test returns
            True if it finds anything, false if it doesn't find."""
 
         # In this case, it should find the user object
@@ -43,7 +43,7 @@ class UnitTests(TestCase):
         assert get_user_by_uname("test") is None
 
     def test_is_pword(self):
-        """this function checks input pword against stored pword"""
+        """This function checks input pword against stored pword"""
 
         fake_user = User.query.filter_by(user_id=1).one()
         # true positive (no false negatives)
@@ -52,13 +52,13 @@ class UnitTests(TestCase):
         assert is_pword(fake_user, "secret") is False
 
     def test_hash_it(self):
-        """uses bcrypt to hash a string"""
+        """Uses bcrypt to hash a string"""
 
         # checks that bcrypt is connected
         assert hash_it("secret3")
     
     def test_basic_locs(self):
-        """auto-creates the 4 basic pantry locations for a new user
+        """Auto-creates the 4 basic pantry locations for a new user
            caution: this is more os a SQL/db test"""
 
         # import pdb; pdb.set_trace()
@@ -81,7 +81,7 @@ class UnitTests(TestCase):
         assert len(Location.query.filter_by(user_id=test_id).all()) == 4
 
     def test_get_locs(self):
-        """takes user id, returns list of user's location objects"""
+        """Takes user id, returns list of user's location objects"""
 
         query = Location.query.filter_by(user_id=1).order_by(Location.location_name).all()
         function = get_locs(1)
@@ -89,7 +89,7 @@ class UnitTests(TestCase):
         assert query == function
 
     def test_refilled(self):
-        """processes form from @store page: removes item from shopping list,
+        """Processes form from @store page: removes item from shopping list,
            change pantry status to true,
            update last purchase date
            update expiration"""
@@ -137,7 +137,7 @@ class UnitTests(TestCase):
         eggs.exp = 4
         celery.exp = 3
 
-        #refill all of them excpet celery, change exp of milk and eggs only
+        # refill all of them excpet celery, change exp of milk and eggs only
         refilled([3, 1, 2], ['', '20', '30', '40'], [3, 1, 2, 8])
 
         assert peppercorns.exp == 10
@@ -157,7 +157,7 @@ class FlaskIntegrationTests(TestCase):
         app.config['TESTING'] = True
         # To use session info, need secret key
         app.config['SECRET_KEY'] = 'wowsuchsecret'
-        # fake a user_id in the session so we can get access to pages where this is required
+        # Fake a user_id in the session so we can get access to pages where this is required
         with self.client.session_transaction() as sess:
             sess['user_id'] = 1
         
@@ -174,7 +174,7 @@ class FlaskIntegrationTests(TestCase):
         load_items(food_file)
 
     def tearDown(self):
-        """runs after each test, deletes test database"""
+        """Runs after each test, deletes test database"""
 
         db.session.remove()
         db.session.close()
@@ -332,7 +332,7 @@ class FlaskIntegrationTests(TestCase):
         self.assertIn("<th>Out of Stock</th>", result.data)
 
     def test_store_page(self):
-        """move an item onto shopping list and check that it displays"""
+        """Move an item onto shopping list and check that it displays"""
 
         init_result = self.client.get("/shop", follow_redirects=True)
         self.assertNotIn("peppercorns", init_result.data) 
@@ -361,7 +361,7 @@ class FlaskIntegrationTests(TestCase):
         self.assertIn("<p>Your foods, ordered by first to expire</p>", result.data)
 
     def test_update_single_foodstuff(self):
-        """update any field on a single foodstuff item"""
+        """Update any field on a single foodstuff item"""
 
         # grab a sample food obj to test edits
         peppercorns = Foodstuff.query.get(3)

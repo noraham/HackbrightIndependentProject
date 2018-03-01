@@ -1,18 +1,19 @@
 """local server for Remote Pantry"""
 
-from datetime import datetime, timedelta
-import bcrypt
-
-from jinja2 import StrictUndefined
-from flask import (Flask, render_template, redirect, request, flash, session, g)
-from flask_debugtoolbar import DebugToolbarExtension
-from tablesetup import User, Foodstuff, Location, Barcode, connect_to_db, db
 from collections import OrderedDict
+from datetime import datetime, timedelta
+
+import bcrypt
+from flask import Flask, render_template, redirect, request, flash, session, g, jsonify
 from functools import wraps
+from flask_debugtoolbar import DebugToolbarExtension
+from jinja2 import StrictUndefined
+
 from pantry_functions import (login_required, get_user_by_uname, is_pword,
                               hash_it, basic_locs, get_locs, eatme_generator,
                               get_shop_lst, refilled, out_of_stock, to_refill,
                               make_pantry, make_new_user)
+from tablesetup import User, Foodstuff, Location, Barcode, connect_to_db, db
 
 
 app = Flask(__name__)
@@ -78,7 +79,7 @@ def newuser_form_handle():
     # Transform and auto-create
     hashed_pword = hash_it(password)
 
-    # check if username has already been registered
+    # Check if username has already been registered
     tricky_user = get_user_by_uname(username)
 
     if not tricky_user:
@@ -113,7 +114,7 @@ def foodstuff_form_display():
 @app.route('/add_item', methods=["POST"])
 @login_required
 def add_foodstuff():
-    """add a new foodstuff"""
+    """Add a new foodstuff"""
 
     # Grab from form
     is_pantry = request.form.get("pantry")
@@ -121,11 +122,11 @@ def add_foodstuff():
     name = request.form.get("name")
     location = request.form.get("location")
     exp = request.form.get("exp")
-    # exp is optional, if left blank it comes in as empty string, needs convert
+    # Exp is optional, if left blank it comes in as empty string, needs convert
     if not exp:
         exp = None
 
-    #Transform and auto-create
+    # Transform and auto-create
     if is_pantry == None:
         is_pantry = False
     if is_shopping == None:
@@ -144,12 +145,12 @@ def add_foodstuff():
 @app.route('/add_loc', methods=["POST"])
 @login_required
 def add_location():
-    """add a new location"""
+    """Add a new location"""
 
     # Grab from form
     loc = request.form.get("loc")
 
-    #Transform and auto-create
+    # Transform and auto-create
     current_user = session["user_id"]
 
     # Check if a location with this name already exists
@@ -166,29 +167,32 @@ def add_location():
         flash("Whoops! That location already exists in your pantry!", 'danger')
         return redirect('/add')
 
-@app.route('/update/<int:location_id>')
+# @app.route('/updatelocationform')
+# @login_required
+# def update_location_form():
+#     """Display form to update location name"""
+
+#     location_id = request.form.get("location_id")
+
+#     loc = Location.query.filter_by(location_id=location_id).one()
+
+#     return jsonify(loc)
+
+@app.route('/updatelocationformhandle', methods=["POST"])
 @login_required
-def update_location_form(location_id):
-    """Display form to update location name"""
-
-    loc = Location.query.filter_by(location_id=location_id).one()
-
-    return render_template('edit_locs.html', loc=loc)
-
-@app.route('/update_loc/<int:location_id>', methods=["POST"])
-@login_required
-def update_location(location_id):
-    """change location_name"""
+def update_location():
+    """Change location_name"""
 
     # Grab from form
     new_name = request.form.get("new_name")
+    location_id = request.form.get("loc_id")
     to_update = Location.query.filter_by(location_id=location_id).one()
 
     # Update location's name
     to_update.location_name = new_name
     db.session.commit()
 
-    return redirect("/pantry")
+    return "updated"
 
 @app.route('/pantry')
 @login_required
@@ -203,7 +207,7 @@ def pantry_display():
 @app.route('/update', methods=["POST"])
 @login_required
 def update_foodstuff():
-    """update foodstuff item is_pantry and/or is_shopping in database"""
+    """Update foodstuff item is_pantry and/or is_shopping in database"""
 
     # Grab from form
     empties = request.form.getlist("empty")
@@ -233,7 +237,7 @@ def edit_item(pantry_id):
 @app.route('/update/<int:pantry_id>', methods=["POST"])
 @login_required
 def update_single_foodstuff(pantry_id):
-    """update any field on a single foodstuff item"""
+    """Update any field on a single foodstuff item"""
 
     # Grab from form
     is_pantry = request.form.get("pantry")
@@ -290,7 +294,7 @@ def store_form_display():
 @app.route('/restock', methods=["POST"])
 @login_required
 def restock_foodstuff():
-    """update foodstuff item"""
+    """Update foodstuff item"""
 
     # Grab from form
     refills = request.form.getlist("refill")

@@ -3,6 +3,32 @@
 {% block title %}Remote Pantry{% endblock %}
 {% block content %}
 
+<!-- Location Edit Modal -->
+<div class="modal fade" id="locEditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Edit Location Name</h4>
+      </div>
+      <div id="locform">
+          <div class="modal-body">
+            <form action="/updatelocationformhandle" method="POST">
+                <div class="form-inline">
+                    <label>Name:&nbsp;<input type="text" class="form-control" name="new_name" id="new_name"></label>
+                </div>
+          </div>
+          <div class="modal-footer">
+            <button data-test="test" data-dismiss="modal" type="submit" class="btn btn-primary locSubmit">Update</button>
+            </form>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Pantry Panels -->
 <form action="update" method="POST">
 {% for key, val in pantry.iteritems() %}
 <div class="panel panel-default">
@@ -10,7 +36,7 @@
         <span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"></i></span>
         <div class="btn-group">
             <a href="/update/{{ key.location_id }}">
-                <button type="button" class="btn btn-primary">
+                <button type="button" class="btn btn-primary locEventListener" data-toggle="modal" data-target="#locEditModal" data-locid="{{ key.location_id }}" data-locname="{{ key.location_name }}">
                     {{ key.location_name }}
                     <span class="badge">{{ val|length }}</span>
                 </button>

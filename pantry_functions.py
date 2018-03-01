@@ -11,7 +11,7 @@ from collections import OrderedDict
 from functools import wraps
 
 def login_required(f):
-    """view decorator, wrap any functions where user must be logged in to view page.
+    """View decorator, wrap any functions where user must be logged in to view page.
        If not logged in, user is redirected home + flash message to log in"""
     
     @wraps(f)
@@ -24,13 +24,13 @@ def login_required(f):
 
 
 def get_user_by_uname(username):
-    """takes username, returns user obj from database"""
+    """Takes username, returns user obj from database"""
 
     user = User.query.filter_by(username=username).first()
     return user
 
 def is_pword(user, pword_input):
-    """checks input pword against stored pword. Takes user obj and pword to 
+    """Checks input pword against stored pword. Takes user obj and pword to 
     check, returns bool"""
     
     pword_in_table = user.pword.encode('utf8')
@@ -39,13 +39,13 @@ def is_pword(user, pword_input):
     return valid_password
 
 def hash_it(pword):
-    """takes a string, returns hashed string, uses bcrypt"""
+    """Takes a string, returns hashed string, uses bcrypt"""
 
     hashed_pword = bcrypt.hashpw(pword.encode('utf8'), bcrypt.gensalt(10))
     return hashed_pword
 
 def basic_locs(user_id):
-    """takes user id, creates 4 locations for this user in their pantry"""
+    """Takes user id, creates 4 locations for this user in their pantry"""
 
     new_fridge = Location(user_id=user_id, location_name="Fridge")
     db.session.add(new_fridge)
@@ -62,13 +62,13 @@ def basic_locs(user_id):
     db.session.commit()
 
 def get_locs(user_id):
-    """takes user id, returns list of user's location objects"""
+    """Takes user id, returns list of user's location objects"""
 
     locs = Location.query.filter_by(user_id=user_id).order_by(Location.location_name).all()
     return locs
 
 def eatme_generator(user_id):
-    """takes user id, returns list of all items with expiry, sorted"""
+    """Takes user id, returns list of all items with expiry, sorted"""
     
     # Grab all user's foodstuffs with an exp
     with_exp = Foodstuff.query.filter(Foodstuff.user_id == user_id,
@@ -98,7 +98,7 @@ def eatme_generator(user_id):
     return eat_me
 
 def get_shop_lst(user_id):
-    """takes user id, generates list of foodstuff objects that have been 
+    """Takes user id, generates list of foodstuff objects that have been 
        placed on the shopping list"""
 
     shopping_list = Foodstuff.query.filter_by(user_id=user_id,
@@ -147,7 +147,7 @@ def to_refill(refills):
     db.session.commit()
 
 def make_pantry(user_id):
-    """iterate through list of location objects, pulling all foodstuffs that
+    """Iterate through list of location objects, pulling all foodstuffs that
        match location id, append to pantry dictionary of
        location_name:[list of matching foodstuffs]"""
     
@@ -176,7 +176,7 @@ def make_pantry(user_id):
     return pantry
 
 def make_new_user(uname, pword, fname, lname, email):
-    """instantiate a User, add to db"""
+    """Instantiate a User, add to db"""
 
     new_user = User(username=uname, pword=pword, fname=fname,
                         lname=lname, email=email)
