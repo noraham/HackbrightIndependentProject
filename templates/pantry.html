@@ -54,7 +54,7 @@
             <div class="form-inline">
                 <label>Location:&nbsp;</label>
                 {% for loc in user_locs %}
-                    <label class="radio-inline"><input type="radio" name="location" value="{{ loc.location_id }}" id="locButt-{{loc.location_id}}">{{ loc.location_name }}</label>
+                    <label class="radio-inline"><input class="loc" type="radio" name="location" value="{{ loc.location_id }}" id="locButt-{{loc.location_id}}">{{ loc.location_name }}</label>
                 {% endfor %}
             </div>
             <div class="form-inline">
@@ -64,8 +64,6 @@
                 <label>Description:&nbsp;</label>
                 <textarea id="descript" name="description" class="form-control" rows="3"></textarea>
             </div>
-
-
           </div>
           <div class="modal-footer">
             <button id="foodSubmit" data-dismiss="modal" type="submit" class="btn btn-primary">Update</button>

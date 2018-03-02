@@ -1,7 +1,6 @@
 "use strict";
 
 $("#locform").hide();
-// $("#foodform").hide();
 
 // Listener and function to display LOCATION form in modal
 function locationEditDisplay(evt) {
@@ -42,9 +41,9 @@ $("#locSubmit").on('click', locationUpdate);
 
 
 // need to clear modal between clicks, NOT WORKING
-$('locEditModal').on('hidden.bs.modal', function () {
-    $(this).find('.locid').trigger('reset');
-})
+// $('locEditModal').on('hidden.bs.modal', function () {
+//     $(this).find('.locid').trigger('reset');
+// })
 
 
 // Listener and function to display FOOD form in modal
@@ -62,11 +61,9 @@ function foodEditPrefills(results) {
     $('#locButt-'+loc).prop('checked', 'true').trigger("click");
     $('#exp').attr('placeholder', results.exp);
     $('#descript').attr('placeholder', results.description);
-    
 
-    // $("#foodform").show();
+    $('#foodSubmit').attr('data-pantryid', results.pantryId);
 }
-
 
 function foodEditDisplay(evt) {
     let itemId = $(this).data("itemid");
@@ -77,33 +74,43 @@ function foodEditDisplay(evt) {
     }
 
     $.get("/editpantryitem", formInput, foodEditPrefills)
-
-    // $("#foodform").show();
 }
 
 $(".editFoodLink").on('click', foodEditDisplay);
 
 // listener and functions to handle FOOD form submission - update db and change view
-function updatePantryPageFood(result) {
-    alert(result);
-}
+// function updatePantryPageFood(result) {
+//     alert(result);
+// }
 
 function foodUpdate(evt) {
-    evt.preventDefault();
 
-    // // get all fields from form, put in formInput
-    // let locId = $(this).data("locid");
-    // let new_name = $("#new_name").val()
-    // let formInput = {
-    //     "new_name": new_name,
-    //     "loc_id": locId
-    // }
-    // console.log(formInput)
+    let pantryId = $(this).data("pantryid");
+    // get all fields from form, put in formInput
+    let name = $('input[name=name]').val();
+    let shopping = $('input[name=shop]:checked').val();
+    // let purch = $("#lastPurch").val();
+    let purch = $('input[name=last_purch]').val();
+    let loc = $('input[name=location]:checked').val();
+    let exp = $("#exp").val();
+    let description = $("#descript").val();
 
-    // $.post("/edit/<int:pantry_id>", formInput, updatePantryPageFood)
+    let formInput = {
+        "pantry_id": pantryId,
+        "name": name,
+        "shop": shopping,
+        "last_purch": purch,
+        "location": loc,
+        "exp": exp,
+        "description": description
+    }
+    console.log(formInput)
+
+    $.post("/updatepantryitem", formInput)
+        // , updatePantryPageFood)
     // // change name and whether is still on page
     // $(".locEventListener").html(new_name);
     // // move this to upper function?
 }
 
-$(".foodSubmit").on('click', foodUpdate);
+$("#foodSubmit").on('click', foodUpdate);

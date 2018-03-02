@@ -253,17 +253,27 @@ def edit_item():
 
 @app.route('/updatepantryitem', methods=["POST"])
 @login_required
-def update_single_foodstuff(pantry_id):
+def update_single_foodstuff():
     """Update any field on a single foodstuff item"""
 
     # Grab from form
-    is_pantry = request.form.get("pantry")
+    pantry_id = request.form.get("pantry_id")
     is_shopping = request.form.get("shop")
     name = request.form.get("name")
     last_purch = request.form.get("last_purch")
     location = request.form.get("location")
     exp = request.form.get("exp")
     description = request.form.get("description")
+
+    print "##################"
+    print pantry_id
+    print is_shopping
+    print name
+    print last_purch
+    print location
+    print exp
+    print description
+    print "##################"
 
     #Transform and auto-create
     current_food_obj = Foodstuff.query.get(pantry_id)
@@ -274,8 +284,10 @@ def update_single_foodstuff(pantry_id):
         name = name.encode("utf8")
         current_food_obj.name = name
     if location:
+        print "flag location"
         location = int(location)
-        current_food_obj.location_id = location
+        if current_food_obj.location_id != location:
+            current_food_obj.location_id = location
     if exp:
         exp = int(exp)
         current_food_obj.exp = exp
@@ -285,16 +297,16 @@ def update_single_foodstuff(pantry_id):
     if last_purch:
         last_purch = datetime.strptime(last_purch, "%Y-%m-%d")
         current_food_obj.last_purch = last_purch
-    if is_pantry:
-        current_food_obj.is_pantry = is_pantry
     if is_shopping:
-        current_food_obj.is_shopping = is_shopping
+        print "flag shopping"
+        if current_food_obj.is_shopping != is_shopping:
+            current_food_obj.is_shopping = is_shopping
 
     db.session.add(current_food_obj)
     db.session.commit()
 
     flash("Your item has been updated")
-    return redirect('/pantry')
+    return "yipee"
 
 
 @app.route('/shop')
