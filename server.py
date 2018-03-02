@@ -202,8 +202,9 @@ def pantry_display():
 
     current_user = session['user_id']
     pantry = make_pantry(current_user)
+    user_locs = get_locs(current_user)
 
-    return render_template("pantry.html", pantry=pantry)
+    return render_template("pantry.html", pantry=pantry, user_locs=user_locs)
 
 @app.route('/update', methods=["POST"])
 @login_required
@@ -245,12 +246,10 @@ def edit_item():
     pretty = ugly.strftime('%b %d, %Y')
 
     return jsonify({"pantryId": item.pantry_id, "userId": item.user_id,
-                    "itemName": item.name,
-                    "isShopping": item.is_shopping, "isPantry": item.is_pantry,
-                    "lastPurch": pretty, "firstAdd": item.first_add,
-                    "locationId": item.location_id, "exp": item.exp,
-                    "description": item.description, "barcodeId": item.barcode_id,
-                    "userLocs": loc_lst})
+                    "itemName": item.name, "isShopping": item.is_shopping,
+                    "lastPurch": pretty, "locationId": item.location_id,
+                    "exp": item.exp, "description": item.description,
+                    "barcodeId": item.barcode_id})
 
 @app.route('/updatepantryitem', methods=["POST"])
 @login_required

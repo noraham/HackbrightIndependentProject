@@ -34,7 +34,6 @@ function locationUpdate(evt) {
         "new_name": new_name,
         "loc_id": locId
     }
-    console.log(formInput)
 
     $.post("/updatelocationformhandle", formInput, updatePantryPage)
 }
@@ -50,15 +49,21 @@ $('locEditModal').on('hidden.bs.modal', function () {
 
 // Listener and function to display FOOD form in modal
 function foodEditPrefills(results) {
-    // $('#new_name').attr('placeholder', locName);
+    // Goes through each field in form, filling placeholder info from db
     $('#nameField').attr('placeholder', results.itemName);
-    if(results.isPantry == true) {
-        console.log("pantry is true")
-        $('#stockTrue').prop('checked', 'true').trigger("click");
+    if(results.isShopping == true) {
+        $('#pantryTrue').prop('checked', 'true').trigger("click");
     }
     else {
-        $('#stockFalse').prop('checked', "true").trigger("click");
+        $('#pantryFalse').prop('checked', "true").trigger("click");
     }
+    $('#lastPurch').html(results.lastPurch);
+    let loc = results.locationId;
+    $('#locButt-'+loc).prop('checked', 'true').trigger("click");
+    $('#exp').attr('placeholder', results.exp);
+    $('#descript').attr('placeholder', results.description);
+    
+
     // $("#foodform").show();
 }
 
@@ -70,7 +75,6 @@ function foodEditDisplay(evt) {
     let formInput = {
         "pantry_id": itemId
     }
-    console.log(formInput)
 
     $.get("/editpantryitem", formInput, foodEditPrefills)
 
