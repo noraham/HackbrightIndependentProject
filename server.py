@@ -8,6 +8,7 @@ from flask import Flask, render_template, redirect, request, flash, session, g, 
 from functools import wraps
 from flask_debugtoolbar import DebugToolbarExtension
 from jinja2 import StrictUndefined
+import os
 
 from pantry_functions import (login_required, get_user_by_uname, is_pword,
                               hash_it, basic_locs, get_locs, eatme_generator,
@@ -336,9 +337,13 @@ def eatme_display():
 @app.route('/map')
 @login_required
 def map_display():
-    """Display google map, centered on user's location"""
+    """Display google map, displays type 'supermarket' within 1000m, open now"""
 
-    return render_template("map.html")
+    # Uses secrets.sh to get google map key
+    my_key = os.environ['GPLACES_KEY']
+    # remember to run source secrets.sh in terminal before running this file!
+
+    return render_template("map.html", my_key=my_key)
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
