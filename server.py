@@ -118,8 +118,8 @@ def add_foodstuff():
     """Add a new foodstuff"""
 
     # Grab from form
-    is_pantry = request.form.get("pantry")
-    is_shopping = request.form.get("shop")
+    is_pantry = better_than_boolean(request.form.get("pantry"))
+    is_shopping = better_than_boolean(request.form.get("shop"))
     name = request.form.get("name")
     location = request.form.get("location")
     exp = request.form.get("exp")
@@ -133,6 +133,19 @@ def add_foodstuff():
     if is_shopping == None:
         is_shopping = False
     current_user = session["user_id"]
+
+    print "########################"
+    print is_pantry
+    print type(is_pantry)
+    print is_shopping
+    print type(is_shopping)
+    print name
+    print type(name)
+    print location
+    print type(location)
+    print exp
+    print type(exp)
+    print "########################"
 
     new_item = Foodstuff(user_id=current_user, name=name, is_pantry=is_pantry,
                          is_shopping=is_shopping, location_id=location, exp=exp)

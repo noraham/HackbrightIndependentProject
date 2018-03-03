@@ -8,6 +8,7 @@ $("#locform").hide();
 // Listener and function to display LOCATION form in modal
 function locationEditDisplay(evt) {
     evt.preventDefault();
+    console.log("this one works")
 
     locId = $(this).data("locid");
     locName = $(this).data("locname");
@@ -103,7 +104,6 @@ function updatePantryPageFood(result) {
     if(result.nameChange != false) {
         $("#foodLink-"+result.pantryId).html(result.nameChange);
     }
-
 }
 
 function foodUpdate(evt) {
@@ -112,7 +112,6 @@ function foodUpdate(evt) {
     // get all fields from form, put in formInput
     name = $('input[name=name]').val();
     shopping = $('input[name=shop]:checked').val();
-    // let purch = $("#lastPurch").val();
     purch = $('input[name=last_purch]').val();
     loc = $('input[name=location]:checked').val();
     exp = $("#exp").val();
@@ -132,6 +131,7 @@ function foodUpdate(evt) {
 }
 
 $("#foodSubmit").on('click', foodUpdate);
+
 
 // need to clear modal between clicks, NOT WORKING
 // $('#locEditModal').on('show.bs.modal', function () {

@@ -3,8 +3,41 @@
 {% block title %}Remote Pantry{% endblock %}
 {% block content %}
 
+<!-- Item Add Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Add a New Item</h4>
+      </div>
+      <div id="addform">
+          <div class="modal-body">
+            <form action="/add_item" method="POST">
+                <div class="form-inline">
+                    <label>Name:&nbsp;<input type="text" class="form-control" name="add_name" required></label>
+                </div>
+                <div class="form-inline">
+                    <label>Location:&nbsp;</label>
+                    {% for loc in user_locs %}
+                        <label class="radio-inline"><input class="locadd" type="radio" name="add_loc" value="{{ loc.location_id }}" id="locAddButt-{{loc.location_id}}">{{ loc.location_name }}</label>
+                    {% endfor %}
+                </div>
+                <div class="form-inline">
+                    <label>Expires in:&nbsp;<input id="add_exp" type="number" class="form-control" name="add_exp"> days (optional)</label>
+                </div>
+          </div>
+          <div class="modal-footer">
+            <button id="addSubmit" data-dismiss="modal" type="submit" class="btn btn-primary">Add</button>
+            </form>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Location Edit Modal -->
-<div class="modal" id="locEditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="locEditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -28,7 +61,7 @@
 </div>
 
 <!-- Foodstuff Edit Modal -->
-<div class="modal" id="foodEditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="foodEditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -91,8 +124,9 @@
             </a>
         </div>
         <div class="btn-group">
-            <button type="button" class="btn btn-success">
-            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            <button type="button" class="btn btn-success addModalButt" data-toggle="modal" data-target="#addModal" data-addlocid="{{ key.location_id }}">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"
+            ></span>
             </button>
         </div>
     </div>
