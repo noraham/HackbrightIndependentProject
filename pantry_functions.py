@@ -97,6 +97,37 @@ def eatme_generator(user_id):
 
     return eat_me
 
+def history_generator(user_id):
+    """Takes user id, returns list of all items previously in pantry, sorted"""
+
+    # Grab all user's foodstuffs with pantry:false
+    not_pantry = Foodstuff.query.filter_by(user_id=user_id, is_shopping=False, is_pantry=False).all()
+    # Foodstuff.query.filter(Foodstuff.user_id == user_id,
+    #                                     Foodstuff.is_pantry == False,
+    #                                     Foodstuff.is_shopping == False).all()
+                
+    # Master list of lists, to be passed to template
+    history = []
+    for foodstuff in not_pantry:
+        # Inner list that will be appended to master list
+        temp = []
+        temp.append(foodstuff.pantry_id)
+        temp.append(foodstuff.name)
+
+        last_purch = foodstuff.last_purch
+        # Lazy time zone fix: subtract 8 hours (hardcoded to PST)
+        # Convert to display format, lazy fix for time zone problem (hardcoded to PST)
+        ugly = (last_purch) + timedelta(hours=-8)
+        pretty = ugly.strftime('%b %d, %Y')
+        temp.append(pretty)
+
+        history.append(temp)
+        # sort by time_left
+        history.sort(key=lambda x: x[2])
+        history.reverse()
+
+    return history
+
 def get_shop_lst(user_id):
     """Takes user id, generates list of foodstuff objects that have been 
        placed on the shopping list"""
@@ -145,6 +176,14 @@ def to_refill(refills):
         to_update = Foodstuff.query.get(item)
         to_update.is_shopping = True
     db.session.commit()
+
+def add_to_pan(empties):
+    """Update item's is_pantry value"""
+
+    for item in empties:
+        to_update = Foodstuff.query.get(item)
+        to_update.is_pantry = True
+    db.session.commit()    
 
 def make_pantry(user_id):
     """Iterate through list of location objects, pulling all foodstuffs that

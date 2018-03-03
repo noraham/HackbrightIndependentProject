@@ -13,7 +13,8 @@ import os
 from pantry_functions import (login_required, get_user_by_uname, is_pword,
                               hash_it, basic_locs, get_locs, eatme_generator,
                               get_shop_lst, refilled, out_of_stock, to_refill,
-                                  make_pantry, make_new_user, better_than_boolean)
+                              make_pantry, make_new_user, better_than_boolean,
+                              history_generator, add_to_pan)
 from tablesetup import User, Foodstuff, Location, Barcode, connect_to_db, db
 
 
@@ -133,19 +134,6 @@ def add_foodstuff():
     if is_shopping == None:
         is_shopping = False
     current_user = session["user_id"]
-
-    print "########################"
-    print is_pantry
-    print type(is_pantry)
-    print is_shopping
-    print type(is_shopping)
-    print name
-    print type(name)
-    print location
-    print type(location)
-    print exp
-    print type(exp)
-    print "########################"
 
     new_item = Foodstuff(user_id=current_user, name=name, is_pantry=is_pantry,
                          is_shopping=is_shopping, location_id=location, exp=exp)
@@ -379,6 +367,33 @@ def map_display():
     # remember to run source secrets.sh in terminal before running this file!
 
     return render_template("map.html", my_key=my_key)
+
+@app.route('/history')
+@login_required
+def history_display():
+    """Display history page, user's empty items ordered by date"""
+
+    # Grab all user's items marked pantry false
+    current_user = session['user_id']
+    history = history_generator(current_user)
+
+
+    return render_template("history.html", history=history)
+
+@app.route('/history_update', methods=["POST"])
+@login_required
+def history_update():
+    """Update foodstuff item from history list"""
+
+    # Grab from form
+    empties = request.form.getlist("empty")
+    refills = request.form.getlist("refill")
+
+    add_to_pan(empties)
+    to_refill(refills)
+
+    return redirect('/history')
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
