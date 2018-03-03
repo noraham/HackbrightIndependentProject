@@ -4,7 +4,7 @@
 {% block content %}
 
 <!-- Location Edit Modal -->
-<div class="modal fade" id="locEditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal" id="locEditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -28,7 +28,7 @@
 </div>
 
 <!-- Foodstuff Edit Modal -->
-<div class="modal fade" id="foodEditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal" id="foodEditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -106,7 +106,7 @@
             {% for each in val %}
                 <tr>
                     <td>
-                        <a href="#foodEditModal" class="editFoodLink" data-toggle="modal" data-itemid="{{ each[1] }}" data-itemname="{{ each[0] }}">{{ each[0] }}</a>
+                        <a id="foodLink-{{each[1]}}" class="editFoodLink" data-toggle="modal" data-target="#foodEditModal" data-itemid="{{ each[1] }}" data-itemname="{{ each[0] }}">{{ each[0] }}</a>
                     </td>
                     <td>
                         <input type="checkbox" name="empty" data-toggle="toggle" data-on="Empty" data-off=" " data-size="mini" value="{{ each[1] }}">

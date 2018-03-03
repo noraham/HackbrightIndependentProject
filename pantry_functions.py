@@ -183,4 +183,14 @@ def make_new_user(uname, pword, fname, lname, email):
     db.session.add(new_user)
     db.session.commit()
 
+def better_than_boolean(str):
+    """AJAX won't give me booleans so I'll make them myself"""
+
+    if str == 'True':
+        return True
+    elif str == 'False':
+        return False
+    else:
+        return "error"
+
 # Total = 13

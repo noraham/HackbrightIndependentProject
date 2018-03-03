@@ -13,7 +13,7 @@ import os
 from pantry_functions import (login_required, get_user_by_uname, is_pword,
                               hash_it, basic_locs, get_locs, eatme_generator,
                               get_shop_lst, refilled, out_of_stock, to_refill,
-                              make_pantry, make_new_user)
+                                  make_pantry, make_new_user, better_than_boolean)
 from tablesetup import User, Foodstuff, Location, Barcode, connect_to_db, db
 
 
@@ -258,55 +258,66 @@ def update_single_foodstuff():
 
     # Grab from form
     pantry_id = request.form.get("pantry_id")
-    is_shopping = request.form.get("shop")
+    is_shopping = better_than_boolean(request.form.get("shop"))
     name = request.form.get("name")
     last_purch = request.form.get("last_purch")
     location = request.form.get("location")
     exp = request.form.get("exp")
     description = request.form.get("description")
 
-    print "##################"
-    print pantry_id
-    print is_shopping
-    print name
-    print last_purch
-    print location
-    print exp
-    print description
-    print "##################"
-
     #Transform and auto-create
     current_food_obj = Foodstuff.query.get(pantry_id)
 
     # Whatever fields a user has filled out will be updated
     # If no fields were filled, the item will not be changed
+    change_counter = 0
+    loc_change = False
+    name_change = False
     if name:
+        print "flag name"
         name = name.encode("utf8")
         current_food_obj.name = name
+        change_counter += 1
+        name_change = name
+
     if location:
-        print "flag location"
         location = int(location)
         if current_food_obj.location_id != location:
             current_food_obj.location_id = location
+            change_counter += 1
+            loc_change = True
+
     if exp:
+        print "flag exp"
         exp = int(exp)
         current_food_obj.exp = exp
+        change_counter += 1
+
     if description:
+        print "flag description"
         description = description.encode("utf8")
         current_food_obj.description = description
+        change_counter += 1
+
     if last_purch:
+        print "flag purch"
         last_purch = datetime.strptime(last_purch, "%Y-%m-%d")
         current_food_obj.last_purch = last_purch
+        change_counter += 1
+
     if is_shopping:
         print "flag shopping"
         if current_food_obj.is_shopping != is_shopping:
             current_food_obj.is_shopping = is_shopping
+            change_counter += 1
 
-    db.session.add(current_food_obj)
-    db.session.commit()
+    if change_counter != 0:
+        db.session.add(current_food_obj)
+        db.session.commit()
+        flash("Your item has been updated")
 
-    flash("Your item has been updated")
-    return "yipee"
+    return jsonify({"locChange": loc_change, "nameChange": name_change,
+                    "pantryId": pantry_id})
 
 
 @app.route('/shop')
