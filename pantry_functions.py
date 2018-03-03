@@ -168,7 +168,7 @@ def out_of_stock(empties):
         to_update = Foodstuff.query.get(item)
         to_update.is_pantry = False
     db.session.commit()
-    
+
 def add_to_pan(empties):
     """Update item's is_pantry value"""
 
@@ -238,6 +238,6 @@ def better_than_boolean(str):
     elif str == 'False':
         return False
     else:
-        return "error"
+        return str
 
 # Total = 13

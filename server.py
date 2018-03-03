@@ -329,8 +329,10 @@ def store_form_display():
     # Grab all user's items with is_shopping status
     current_user = session["user_id"]
     shopping_list = get_shop_lst(current_user)
+    user_locs = get_locs(current_user)
 
-    return render_template("store.html", shopping_list=shopping_list)
+
+    return render_template("store.html", shopping_list=shopping_list, user_locs=user_locs)
 
 @app.route('/restock', methods=["POST"])
 @login_required
