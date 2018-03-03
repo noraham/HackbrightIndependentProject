@@ -168,6 +168,14 @@ def out_of_stock(empties):
         to_update = Foodstuff.query.get(item)
         to_update.is_pantry = False
     db.session.commit()
+    
+def add_to_pan(empties):
+    """Update item's is_pantry value"""
+
+    for item in empties:
+        to_update = Foodstuff.query.get(item)
+        to_update.is_pantry = True
+    db.session.commit()    
 
 def to_refill(refills):
     """Update item's is_shopping value"""
@@ -177,13 +185,13 @@ def to_refill(refills):
         to_update.is_shopping = True
     db.session.commit()
 
-def add_to_pan(empties):
-    """Update item's is_pantry value"""
-
-    for item in empties:
+def remove_from_shop(removals):
+    """Update item's is_shopping value"""
+    
+    for item in removals:
         to_update = Foodstuff.query.get(item)
-        to_update.is_pantry = True
-    db.session.commit()    
+        to_update.is_shopping = False
+    db.session.commit()
 
 def make_pantry(user_id):
     """Iterate through list of location objects, pulling all foodstuffs that

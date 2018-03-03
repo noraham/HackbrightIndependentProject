@@ -14,7 +14,7 @@ from pantry_functions import (login_required, get_user_by_uname, is_pword,
                               hash_it, basic_locs, get_locs, eatme_generator,
                               get_shop_lst, refilled, out_of_stock, to_refill,
                               make_pantry, make_new_user, better_than_boolean,
-                              history_generator, add_to_pan)
+                              history_generator, add_to_pan, remove_from_shop)
 from tablesetup import User, Foodstuff, Location, Barcode, connect_to_db, db
 
 
@@ -341,8 +341,10 @@ def restock_foodstuff():
     refills = request.form.getlist("refill")
     exp = request.form.getlist("exp")
     pan_id = request.form.getlist("hidden_id")
+    removals = request.form.getlist("delete")
     
     refilled(refills, exp, pan_id)
+    remove_from_shop(removals)
 
     return redirect('/shop')
 

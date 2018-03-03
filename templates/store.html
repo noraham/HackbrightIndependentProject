@@ -14,6 +14,7 @@
             <th>Name</th>
             <th> </th>
             <th>Expiration (optional)</th>
+            <th> </th>
         </tr> 
         {% for foodstuff in shopping_list %}
             <tr>
@@ -36,6 +37,12 @@
                             <input type="hidden" name="hidden_id" value="{{ foodstuff.pantry_id }}"/>
                         {% endif %}
                     </div>
+                </td>
+                <td>
+                    <input type="checkbox" name="delete" 
+                    data-toggle="toggle" data-on="Remove" data-off=" "
+                    data-size="mini" 
+                    value="{{ foodstuff.pantry_id }}">
                 </td>
             </tr>
         {% endfor %}
