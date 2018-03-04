@@ -3,38 +3,90 @@
 {% block title %}eat me{% endblock %}
 {% block content %}
 
+<!-- Foodstuff Edit Modal -->
+<div class="modal fade" id="foodEditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Edit Item</h4>
+      </div>
+      <div id="foodform">
+          <div class="modal-body">
+
+            <form action="/updatepantryitem" method="POST">
+            <div class="form-inline">
+                <label>Name:&nbsp;<input type="text" class="form-control" name="name" id="nameField"></label>
+            </div>
+            <div class="form-inline">
+                <label>In Pantry:&nbsp;</label>
+                <label id="pantryTrue" class="radio-inline"><input type="radio" name="pantry" value="True">True</label>
+                <label id="pantryFalse" class="radio-inline"><input type="radio" name="pantry" value="False">False</label>
+            </div>
+            <div class="form-inline">
+                <label>On shopping list:&nbsp;</label>
+                <label id="shoppingTrue" class="radio-inline"><input type="radio" name="shop" value="True">True</label>
+                <label id="shoppingFalse" class="radio-inline"><input type="radio" name="shop" value="False">False</label>
+            </div>
+            <div class="form-inline">
+                <label>Last Purchased:&nbsp;</label><span id="lastPurch"></span>
+                <input type="date" class="form-control" name="last_purch">
+            </div>
+            <div class="form-inline">
+                <label>Location:&nbsp;</label>
+                {% for loc in user_locs %}
+                    <label class="radio-inline"><input class="loc" type="radio" name="location" value="{{ loc.location_id }}" id="locButt-{{loc.location_id}}">{{ loc.location_name }}</label>
+                {% endfor %}
+            </div>
+            <div class="form-inline">
+                <label>Expires in:&nbsp;<input id="exp" type="number" class="form-control" name="exp">&nbsp;days</label>
+            </div>
+            <div class="form-group">
+                <label>Description:&nbsp;</label>
+                <textarea id="descript" name="description" class="form-control" rows="3"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="foodSubmit" data-dismiss="modal" type="submit" class="btn btn-primary">Update</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Eatme Panel -->
 <div class="panel panel-default">
     <div class="panel-heading">Eat Me</div>
-    <div class="panel-body">
-        <p>Your foods, ordered by first to expire</p>
+    <div class="panel-body">    
+        <table class='table table-striped'>
+            <tr>
+                <th>Name</th>
+                <th>Days Until Expiry</th>
+                <th>Location</th>
+            </tr>
+            {% for foodstuff in eat_me %}
+            <tr>
+                <td>
+                    <a id="foodLink-{{foodstuff[0]}}" class="editFoodLink" data-toggle="modal" data-target="#foodEditModal" data-itemid="{{ foodstuff[0] }}" data-itemname="{{ foodstuff[1] }}">{{ foodstuff[1] }}</a>
+                </td>
+                {% if foodstuff[3] > -1 %}
+                    <td class="positive">
+                            {{ foodstuff[3] }}
+                    </td>
+                {% else %}
+                    <td class="negative">
+                            {{ foodstuff[3] }}
+                    </td>
+                {% endif %}
+                <td>
+                    {{ foodstuff[2] }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
-    
-    <table class='table table-striped'>
-        <tr>
-            <th>Name</th>
-            <th>Expiration</th>
-            <th>Location</th>
-        </tr>
-        {% for foodstuff in eat_me %}
-        <tr>
-            <td>
-                <a href="/edit/{{ foodstuff[0] }}">{{ foodstuff[1] }}</a>
-            </td>
-            {% if foodstuff[3] > -1 %}
-                <td class="positive">
-                        {{ foodstuff[3] }}
-                </td>
-            {% else %}
-                <td class="negative">
-                        {{ foodstuff[3] }}
-                </td>
-            {% endif %}
-            <td>
-                {{ foodstuff[2] }}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
 </div>
 
 

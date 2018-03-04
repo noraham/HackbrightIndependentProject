@@ -243,11 +243,13 @@ def edit_item():
 
 
     # Convert to display format, lazy fix for time zone problem, hardcoded to PST
-    ugly = (item.last_purch) + timedelta(hours=-8)
+    # ugly = (item.last_purch) + timedelta(hours=-8)
+    ugly = item.last_purch
     pretty = ugly.strftime('%b %d, %Y')
 
     return jsonify({"pantryId": item.pantry_id, "userId": item.user_id,
-                    "itemName": item.name, "isShopping": item.is_shopping,
+                    "itemName": item.name, "isPantry": item.is_pantry,
+                    "isShopping": item.is_shopping,
                     "lastPurch": pretty, "locationId": item.location_id,
                     "exp": item.exp, "description": item.description,
                     "barcodeId": item.barcode_id})
@@ -260,6 +262,7 @@ def update_single_foodstuff():
     # Grab from form
     pantry_id = request.form.get("pantry_id")
     is_shopping = better_than_boolean(request.form.get("shop"))
+    is_pantry = request.form.get("pantry")
     name = request.form.get("name")
     last_purch = request.form.get("last_purch")
     location = request.form.get("location")
@@ -273,7 +276,11 @@ def update_single_foodstuff():
     # If no fields were filled, the item will not be changed
     change_counter = 0
     loc_change = False
+    pantry_change = False
+    exp_change = False
     name_change = False
+    purch_change = False
+
     if name:
         print "flag name"
         name = name.encode("utf8")
@@ -293,6 +300,7 @@ def update_single_foodstuff():
         exp = int(exp)
         current_food_obj.exp = exp
         change_counter += 1
+        exp_change = True
 
     if description:
         print "flag description"
@@ -302,9 +310,12 @@ def update_single_foodstuff():
 
     if last_purch:
         print "flag purch"
+        print "1", last_purch
         last_purch = datetime.strptime(last_purch, "%Y-%m-%d")
+        print "2", last_purch
         current_food_obj.last_purch = last_purch
         change_counter += 1
+        purch_change = True
 
     if is_shopping:
         print "flag shopping"
@@ -312,13 +323,23 @@ def update_single_foodstuff():
             current_food_obj.is_shopping = is_shopping
             change_counter += 1
 
+    if is_pantry:
+        print "flag pan"
+        is_pantry = better_than_boolean(is_pantry)
+        if current_food_obj.is_pantry != is_pantry:
+            current_food_obj.is_pantry = is_pantry
+            change_counter += 1
+            pantry_change = True
+
+    print "change_counter", change_counter
     if change_counter != 0:
         db.session.add(current_food_obj)
         db.session.commit()
         flash("Your item has been updated")
 
     return jsonify({"locChange": loc_change, "nameChange": name_change,
-                    "pantryId": pantry_id})
+                    "pantryId": pantry_id, "pantryChange": pantry_change,
+                    "expChange": exp_change, "purchChange": purch_change})
 
 
 @app.route('/shop')
@@ -358,8 +379,9 @@ def eatme_display():
     # Grab all user's items with an exp
     current_user = session['user_id']
     eat_me = eatme_generator(current_user)
+    user_locs = get_locs(current_user)
 
-    return render_template("eatme.html", eat_me=eat_me)
+    return render_template("eatme.html", eat_me=eat_me, user_locs=user_locs)
 
 @app.route('/map')
 @login_required

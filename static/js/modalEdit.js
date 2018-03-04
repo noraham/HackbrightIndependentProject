@@ -1,7 +1,7 @@
 "use strict";
 
 var locId, locName, new_name;
-var loc, itemId, itemName, pantryId, name, shopping, purch, loc, exp, description;
+var loc, itemId, itemName, pantryId, name, shopping, purch, loc, exp, description, pantry;
 
 $("#locform").hide();
 
@@ -54,11 +54,18 @@ function foodEditPrefills(results) {
     // Goes through each field in form, filling placeholder info from db
     $('#nameField').attr('placeholder', results.itemName);
 
-    if(results.isShopping == true) {
+    if(results.isPantry == true) {
         $('#pantryTrue').prop('checked', 'true').trigger("click");
     }
     else {
         $('#pantryFalse').prop('checked', "true").trigger("click");
+    }
+
+    if(results.isShopping == true) {
+        $('#shoppingTrue').prop('checked', 'true').trigger("click");
+    }
+    else {
+        $('#shoppingFalse').prop('checked', "true").trigger("click");
     }
 
     $('#lastPurch').html(results.lastPurch);
@@ -95,8 +102,23 @@ $(".editFoodLink").on('click', foodEditDisplay);
 
 // listener and functions to handle FOOD form submission - update db and change view
 function updatePantryPageFood(result) {
+    // If pantry status changed, have to reload page
+    if(result.pantryChange != false) {
+        location.reload(true);
+    }
+
     // if location changed, have to relaod page
     if(result.locChange != false) {
+        location.reload(true);
+    }
+
+    // this is lazy, I should fix to use jQuery to update
+    if(result.expChange != false) {
+        location.reload(true);
+    }
+
+    // if purchase date changed, have to relaod page
+    if(result.purchChange != false) {
         location.reload(true);
     }
 
@@ -111,6 +133,7 @@ function foodUpdate(evt) {
     pantryId = $(this).data("pantryid");
     // get all fields from form, put in formInput
     name = $('input[name=name]').val();
+    pantry = $('input[name=pantry]:checked').val();
     shopping = $('input[name=shop]:checked').val();
     purch = $('input[name=last_purch]').val();
     loc = $('input[name=location]:checked').val();
@@ -120,6 +143,7 @@ function foodUpdate(evt) {
     let formInput = {
         "pantry_id": pantryId,
         "name": name,
+        "pantry": pantry,
         "shop": shopping,
         "last_purch": purch,
         "location": loc,

@@ -69,11 +69,11 @@ def get_locs(user_id):
 
 def eatme_generator(user_id):
     """Takes user id, returns list of all items with expiry, sorted"""
-    
+
     # Grab all user's foodstuffs with an exp
     with_exp = Foodstuff.query.filter(Foodstuff.user_id == user_id,
                                       Foodstuff.exp != None,
-                                      Foodstuff.is_pantry == True).all()    
+                                      Foodstuff.is_pantry == True).all()
     # Master list of lists, to be passed to template
     eat_me = []
     for foodstuff in with_exp:
@@ -105,7 +105,7 @@ def history_generator(user_id):
     # Foodstuff.query.filter(Foodstuff.user_id == user_id,
     #                                     Foodstuff.is_pantry == False,
     #                                     Foodstuff.is_shopping == False).all()
-                
+
     # Master list of lists, to be passed to template
     history = []
     for foodstuff in not_pantry:
