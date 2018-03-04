@@ -61,6 +61,7 @@ def load_items(food_file):
     db.session.commit()
 
 if __name__ == "__main__":
+    # Run this file to create all tables in db and seed with fake_data
     connect_to_db(app)
     db.create_all()
 

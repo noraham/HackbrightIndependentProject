@@ -77,6 +77,7 @@ def newuser_form_handle():
     fname = request.form.get("fname")
     lname = request.form.get("lname")
     email = request.form.get("email")
+    time_zone = int(request.form.get("time_zone"))
 
     # Transform and auto-create
     hashed_pword = hash_it(password)
@@ -86,7 +87,7 @@ def newuser_form_handle():
 
     if not tricky_user:
         # If username is not in system, allow registration
-        make_new_user(username, hashed_pword, fname, lname, email)
+        make_new_user(username, hashed_pword, fname, lname, email, time_zone)
         flash("Successfully registered")
 
         # Set up session

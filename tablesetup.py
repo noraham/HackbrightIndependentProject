@@ -21,6 +21,7 @@ class User(db.Model):
     lname = db.Column(db.String(50), nullable=False)
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     email = db.Column(db.String(50), nullable=False)
+    time_zone = db.Column(db.Integer, nullable=False, default=-8)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
 
     def __repr__(self):

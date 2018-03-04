@@ -222,11 +222,11 @@ def make_pantry(user_id):
         pantry[loc] = items
     return pantry
 
-def make_new_user(uname, pword, fname, lname, email):
+def make_new_user(uname, pword, fname, lname, email, time_zone):
     """Instantiate a User, add to db"""
 
     new_user = User(username=uname, pword=pword, fname=fname,
-                        lname=lname, email=email)
+                        lname=lname, email=email, time_zone=time_zone)
     db.session.add(new_user)
     db.session.commit()
 
