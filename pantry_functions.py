@@ -134,7 +134,7 @@ def get_shop_lst(user_id):
        placed on the shopping list"""
 
     shopping_list = Foodstuff.query.filter_by(user_id=user_id,
-                                              is_shopping=True).all()
+                        is_shopping=True).order_by(Foodstuff.location_id).all()
     return shopping_list
 
 def refilled(refills, exp, pan_id):

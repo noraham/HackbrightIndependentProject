@@ -1,4 +1,4 @@
-/* look, javascript!*/
+/* JS for panel collapse */
 
 "use strict";
 
