@@ -29,9 +29,15 @@ app.jinja_env.undefined = StrictUndefined
 
 @app.route('/')
 def log_in_form_display():
-    """Homepage, log in or register"""
+    """Homepage, log in or register, shows user info if logged in"""
 
-    return render_template("homepage.html")
+    try:
+        current_user = session["user_id"]
+        current_user_obj = user = User.query.filter_by(user_id=current_user).first()
+    except KeyError:
+        current_user_obj = 0
+
+    return render_template("homepage.html", user=current_user_obj)
 
 @app.route('/login_handle', methods=["POST"])
 def log_in_handle():

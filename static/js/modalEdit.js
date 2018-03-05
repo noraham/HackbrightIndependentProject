@@ -102,6 +102,8 @@ $(".editFoodLink").on('click', foodEditDisplay);
 
 // listener and functions to handle FOOD form submission - update db and change view
 function updatePantryPageFood(result) {
+    // $("#flash").show()
+    
     // If pantry status changed, have to reload page
     if(result.pantryChange != false) {
         location.reload(true);
@@ -155,6 +157,21 @@ function foodUpdate(evt) {
 }
 
 $("#foodSubmit").on('click', foodUpdate);
+
+// show and hide alert/flash messages
+// $('#foodSubmit').on('click', flashAlerts () {
+//     $.alert('Message here', {
+//         autoClose: true,
+//         closeTime: 5000,
+//     });
+// });
+
+// $('#show-alerts').slideDown(function() {
+//     setTimeout(function() {
+//         $('#alert').slideUp();
+//     }, 5000);
+// });
+
 
 
 // need to clear modal between clicks, NOT WORKING

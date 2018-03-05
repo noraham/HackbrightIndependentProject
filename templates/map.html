@@ -4,20 +4,18 @@
 {% block title %}Map{% endblock %}
 {% block content %}
 
-<h1>Let's put a map here</h1>
+<h1>Supermarkets open now:</h1>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <style>
-          /* Always set the map height explicitly to define the size of the div
-           * element that contains the map. */
+          /* Always set the map height explicitly to define the size of the div element that contains the map. */
           #map {
             height: 100%;
           }
           /* Optional: Makes the sample page fill the window. */
           html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
+            height: 90%;
+            padding-top: 25px;
           }
     </style>
     <script>
@@ -31,7 +29,7 @@
         // This creates the map
         map = new google.maps.Map(document.getElementById('map'), {
           center: hbhq,
-          zoom: 17
+          zoom: 16
         });
 
         // This is accessing places library, performs the search with the parameters

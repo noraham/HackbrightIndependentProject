@@ -3,84 +3,95 @@
 {% block title %}Remote Pantry Log in{% endblock %}
 
 {% block content %}
-<div class="container">
-  <div class="jumbotron">
-    <h1>Hello, world!</h1>
-    <p>Welcome to Remote Pantry, Nora's Hackbright project!</p>
+{% if user == 0 %}
+  <div class="container">
+    <div class="jumbotron">
+      <h1>Hello, world!</h1>
+      <p>Welcome to Eat It, Nora's Hackbright project!</p>
+      <p>Eat It saves you from falling on your face when it comes to food management and meal planning.</p>
+      <form action="login_handle" method="POST">
+        <div class="form-inline">
+          <label>Username:&nbsp;<input type="text" name="username" class="form-control">
+          </label>
+        </div>
+        <div class="form-inline">
+          <label>Password:&nbsp;<input type="password" name="password" class="form-control">
+          </label>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+      </form>
+      <br>
+      <p>Register for an account:</p>
 
-    <form action="login_handle" method="POST">
-      <div class="form-inline">
-        <label>Username:&nbsp;<input type="text" name="username" class="form-control">
-        </label>
-      </div>
-      <div class="form-inline">
-        <label>Password:&nbsp;<input type="password" name="password" class="form-control">
-        </label>
-      </div>
-      <button type="submit" class="btn btn-primary">Login</button>
-    </form>
-    <br>
-    <p>Register for an account:</p>
-
-    <form action="register_handle" method="POST">
-      <div class="form-inline">
-        <label>Pantry name:&nbsp;<input type="text" name="username" class="form-control" required>
-        </label>
-      </div>
-      <div class="form-inline">
-        <label>Password:&nbsp;<input type="password" name="password" class="form-control" required>
-        </label>
-      </div>
-      <div class="form-inline">
-        <label>First name:&nbsp;<input type="text" name="fname" class="form-control" required>
-        </label>
-      </div>
-      <div class="form-inline">
-        <label>Last name:&nbsp;<input type="text" name="lname" class="form-control" required>
-        </label>
-      <div class="form-inline">
-        <label>Email address:&nbsp;<input type="email" name="email" class="form-control" required>
-        </label>
-      </div>
-      <div class="dropdown">
-        <label>Timezone of this pantry:&nbsp;</label>
-          <!-- Modified from https://gist.github.com/jonathanforsythe/1065260 -->
-          <select class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" aria-haspopup="true" aria-expanded="true" data-toggle="dropdown" name="time_zone">
-            <ul class="dropdown-menu" aria-labelledby="timeZone">
-                <li><option value="-8" selected>(GMT -8:00) Pacific Time</option></li>
-                <li><option value="-7">(GMT -7:00) Mountain Time</option></li>
-                <li><option value="-6">(GMT -6:00) Central Time</option></li>
-                <li><option value="-5">(GMT -5:00) Eastern Time</option></li>
-                <li><option value="0">(GMT) Western Europe Time</option></li>
-                <li role="separator" class="divider"></li>  <!-- This REFUSES to work, using ugly workaround -->
-                <li><option>_______________________________</option></li>
-                <li><option value="-12">(GMT -12:00) Eniwetok, Kwajalein</option></li>
-                <li><option value="-11">(GMT -11:00) Midway Island, Samoa</option></li>
-                <li><option value="-10">(GMT -10:00) Hawaii</option></li>
-                <li><option value="-9">(GMT -9:00) Alaska</option></li>
-                <li><option value="-4">(GMT -4:00) Atlantic Time (Canada), Caracas, La Paz</option></li>
-                <li><option value="-3">(GMT -3:00) Brazil, Buenos Aires, Georgetown</option></li>
-                <li><option value="-2">(GMT -2:00) Mid-Atlantic</option></li>
-                <li><option value="-1">(GMT -1:00 hour) Azores, Cape Verde Islands</option></li>
-                <li><option value="1">(GMT +1:00 hour) Brussels, Copenhagen, Madrid, Paris</option></li>
-                <li><option value="2">(GMT +2:00) Kaliningrad, South Africa</option></li>
-                <li><option value="3">(GMT +3:00) Baghdad, Riyadh, Moscow</option></li>
-                <li><option value="4">(GMT +4:00) Abu Dhabi, Muscat, Baku</option></li>
-                <li><option value="5">(GMT +5:00) Ekaterinburg, Islamabad, Karachi</option></li>
-                <li><option value="6">(GMT +6:00) Almaty, Dhaka, Colombo</option></li>
-                <li><option value="7">(GMT +7:00) Bangkok, Hanoi, Jakarta</option></li>
-                <li><option value="8">(GMT +8:00) Beijing, Perth, Singapore, Hong Kong</option></li>
-                <li><option value="9">(GMT +9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk</option></li>
-                <li><option value="10">(GMT +10:00) Eastern Australia, Guam, Vladivostok</option></li>
-                <li><option value="11">(GMT +11:00) Magadan, Solomon Islands, New Caledonia</option></li>
-                <li><option value="12">(GMT +12:00) Auckland, Wellington, Fiji, Kamchatka</option></li>
-            </ul>
-          </select>
-      </div>
-      <div></div>
-      </div>
-        <button type="submit" class="btn btn-primary">Register</button>
-    </form>
+      <form action="register_handle" method="POST">
+        <div class="form-inline">
+          <label>Pantry name:&nbsp;<input type="text" name="username" class="form-control" required>
+          </label>
+        </div>
+        <div class="form-inline">
+          <label>Password:&nbsp;<input type="password" name="password" class="form-control" required>
+          </label>
+        </div>
+        <div class="form-inline">
+          <label>First name:&nbsp;<input type="text" name="fname" class="form-control" required>
+          </label>
+        </div>
+        <div class="form-inline">
+          <label>Last name:&nbsp;<input type="text" name="lname" class="form-control" required>
+          </label>
+        <div class="form-inline">
+          <label>Email address:&nbsp;<input type="email" name="email" class="form-control" required>
+          </label>
+        </div>
+        <div class="dropdown">
+          <label>Timezone of this pantry:&nbsp;</label>
+            <!-- Modified from https://gist.github.com/jonathanforsythe/1065260 -->
+            <select class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" aria-haspopup="true" aria-expanded="true" data-toggle="dropdown" name="time_zone">
+              <ul class="dropdown-menu" aria-labelledby="timeZone">
+                  <li><option value="-8" selected>(GMT -8:00) Pacific Time</option></li>
+                  <li><option value="-7">(GMT -7:00) Mountain Time</option></li>
+                  <li><option value="-6">(GMT -6:00) Central Time</option></li>
+                  <li><option value="-5">(GMT -5:00) Eastern Time</option></li>
+                  <li><option value="0">(GMT) Western Europe Time</option></li>
+                  <li role="separator" class="divider"></li>  <!-- This REFUSES to work, using ugly workaround -->
+                  <li><option>_______________________________</option></li>
+                  <li><option value="-12">(GMT -12:00) Eniwetok, Kwajalein</option></li>
+                  <li><option value="-11">(GMT -11:00) Midway Island, Samoa</option></li>
+                  <li><option value="-10">(GMT -10:00) Hawaii</option></li>
+                  <li><option value="-9">(GMT -9:00) Alaska</option></li>
+                  <li><option value="-4">(GMT -4:00) Atlantic Time (Canada), Caracas, La Paz</option></li>
+                  <li><option value="-3">(GMT -3:00) Brazil, Buenos Aires, Georgetown</option></li>
+                  <li><option value="-2">(GMT -2:00) Mid-Atlantic</option></li>
+                  <li><option value="-1">(GMT -1:00 hour) Azores, Cape Verde Islands</option></li>
+                  <li><option value="1">(GMT +1:00 hour) Brussels, Copenhagen, Madrid, Paris</option></li>
+                  <li><option value="2">(GMT +2:00) Kaliningrad, South Africa</option></li>
+                  <li><option value="3">(GMT +3:00) Baghdad, Riyadh, Moscow</option></li>
+                  <li><option value="4">(GMT +4:00) Abu Dhabi, Muscat, Baku</option></li>
+                  <li><option value="5">(GMT +5:00) Ekaterinburg, Islamabad, Karachi</option></li>
+                  <li><option value="6">(GMT +6:00) Almaty, Dhaka, Colombo</option></li>
+                  <li><option value="7">(GMT +7:00) Bangkok, Hanoi, Jakarta</option></li>
+                  <li><option value="8">(GMT +8:00) Beijing, Perth, Singapore, Hong Kong</option></li>
+                  <li><option value="9">(GMT +9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk</option></li>
+                  <li><option value="10">(GMT +10:00) Eastern Australia, Guam, Vladivostok</option></li>
+                  <li><option value="11">(GMT +11:00) Magadan, Solomon Islands, New Caledonia</option></li>
+                  <li><option value="12">(GMT +12:00) Auckland, Wellington, Fiji, Kamchatka</option></li>
+              </ul>
+            </select>
+        </div>
+        <div></div>
+        </div>
+          <button type="submit" class="btn btn-primary">Register</button>
+      </form>
+    </div>
   </div>
-</div>
+{% else %}
+  <div class="container">
+    <div class="jumbotron">
+      <h1>Welcome back!</h1>
+      <p>This is the remote pantry for {{ user.username }}</p>
+      <p>This pantry is owned by {{user.fname}} {{user.lname}}</p>
+      <a href="/logout"><button type="button" class="btn btn-primary">Switch Accounts</button></a>
+    </div>
+  </div>
+{% endif %}
 {% endblock %}
