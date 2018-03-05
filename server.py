@@ -14,7 +14,8 @@ from pantry_functions import (login_required, get_user_by_uname, is_pword,
                               hash_it, basic_locs, get_locs, eatme_generator,
                               get_shop_lst, refilled, out_of_stock, to_refill,
                               make_pantry, make_new_user, better_than_boolean,
-                              history_generator, add_to_pan, remove_from_shop)
+                              history_generator, add_to_pan, remove_from_shop,
+                              get_tz)
 from tablesetup import User, Foodstuff, Location, Barcode, connect_to_db, db
 
 
@@ -243,9 +244,10 @@ def edit_item():
         loc_lst.append(temp)
 
 
-    # Convert to display format, lazy fix for time zone problem, hardcoded to PST
-    # ugly = (item.last_purch) + timedelta(hours=-8)
-    ugly = item.last_purch
+    """Convert to display format, get user's timezone, apply that to last_purch,
+       which is saved in GMT in db, so user sees last_purch in their time zone"""
+    tz = get_tz(current_user)
+    ugly = (item.last_purch) + timedelta(hours=tz)
     pretty = ugly.strftime('%b %d, %Y')
 
     return jsonify({"pantryId": item.pantry_id, "userId": item.user_id,
@@ -311,10 +313,13 @@ def update_single_foodstuff():
 
     if last_purch:
         print "flag purch"
-        print "1", last_purch
         last_purch = datetime.strptime(last_purch, "%Y-%m-%d")
-        print "2", last_purch
-        current_food_obj.last_purch = last_purch
+        # Have to add hours and minutes or date display isn't accurate
+        proper_last_purch = last_purch.replace(hour=12, minute=00)
+        """Getting timestamp on foodstuff was a problem. For now, just hardcoding 
+           to noon since it will accurately represent the day, which is the only 
+           thing I show to the user (and use to calc eat_me)."""
+        current_food_obj.last_purch = proper_last_purch
         change_counter += 1
         purch_change = True
 

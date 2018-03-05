@@ -85,9 +85,10 @@ def eatme_generator(user_id):
 
         # DateTime math to display days until item expires
         last_purch = foodstuff.last_purch
-        exp = foodstuff.exp
-        # Lazy time zone fix: subtract 8 hours (hardcoded to PST)
-        exp_date = last_purch + timedelta(days=exp, hours=-8)
+        exp = foodstuff.exp + 1
+        # time zone fix: subtract user's tz hours from db value (in GMT)
+        tz = get_tz(user_id)
+        exp_date = last_purch + timedelta(days=exp, hours=tz)
         time_left = (exp_date - datetime.utcnow()).days
         temp.append(time_left)
 
@@ -240,4 +241,12 @@ def better_than_boolean(str):
     else:
         return str
 
-# Total = 13
+def get_tz(user_id):
+    """Get user's time zone from db"""
+
+    user_obj = User.query.filter_by(user_id=user_id).one()
+    tz = user_obj.time_zone
+
+    return tz
+
+# Total = 18
