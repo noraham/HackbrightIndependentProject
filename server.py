@@ -109,17 +109,17 @@ def newuser_form_handle():
         flash("There is already an account linked to this username.", 'danger')
         return redirect('/')
 
-@app.route('/add')
-@login_required
-def foodstuff_form_display():
-    """Display add form"""
+# @app.route('/add')
+# @login_required
+# def foodstuff_form_display():
+#     """Display add form"""
 
-    current_user = session["user_id"]
+#     current_user = session["user_id"]
 
-    # Pull and pass user's locations for radio buttons
-    user_locs = get_locs(current_user)
+#     # Pull and pass user's locations for radio buttons
+#     user_locs = get_locs(current_user)
 
-    return render_template("add.html", user_locs=user_locs)
+#     return render_template("add.html", user_locs=user_locs)
 
 @app.route('/add_item', methods=["POST"])
 @login_required
@@ -150,7 +150,7 @@ def add_foodstuff():
     db.session.commit()
 
     flash("Successfully added")
-    return redirect('/add')
+    return redirect('/pantry')
 
 @app.route('/add_loc', methods=["POST"])
 @login_required
@@ -172,21 +172,10 @@ def add_location():
         db.session.add(new_loc)
         db.session.commit()
         flash("Successfully added")
-        return redirect('/add')
+        return redirect('/pantry')
     else:
         flash("Whoops! That location already exists in your pantry!", 'danger')
-        return redirect('/add')
-
-# @app.route('/updatelocationform')
-# @login_required
-# def update_location_form():
-#     """Display form to update location name"""
-
-#     location_id = request.form.get("location_id")
-
-#     loc = Location.query.filter_by(location_id=location_id).one()
-
-#     return jsonify(loc)
+        return redirect('/pantry')
 
 @app.route('/updatelocationformhandle', methods=["POST"])
 @login_required
@@ -432,11 +421,17 @@ def history_update():
 
     return redirect('/history')
 
+@app.route('/map_refresh')
+@login_required
+def reload_map():
+    """Allows user to re-call googlimoops api"""
+    return redirect('/map')
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
     # that we invoke the DebugToolbarExtension
-    app.debug = True
+    # app.debug = True
 
     connect_to_db(app)
 

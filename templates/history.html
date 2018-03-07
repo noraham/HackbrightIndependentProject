@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% set active_page = "history" %}
+{% block title %}History{% endblock %}
+{% block content %}
+
+<!-- Guide Panel -->
+<form action="/history_update" method="POST">
+<div id="guide" class="panel panel-default container-fluid" style="background-image: url(static/img/footer_lodyas.png); padding: 10px; background-position: center;">
+  <div class="panel-body">
+    <div class="row">
+        <div class="col-xs-8"> 
+            Items here are neither in your Pantry nor on your Shopping List.&nbsp;&nbsp;
+            <br>Toggle and Update to add back to Pantry or Shoping List. &nbsp;
+        </div>
+        <div class="col-xs-4">
+            <button type="submit" class="btn btn-primary pull-right" style="width: 160px;">Update</button>
+        </div>
+    </div>
+  </div>
+</div>
+
+<!-- History Panel -->
+<div class="panel panel-default">
+    <div class="panel-heading">
+        History &nbsp;&nbsp;<span class="badge">{{ history|length }}
+        </span>
+    </div>
+    <div class="panel-body">
+    <table class='table table-striped table-condensed'>
+        <tr>
+            <th>Name</th>
+            <th>Add to Pantry</th>
+            <th>Add to Shopping List</th>
+            <th>Last Purchased</th>
+        </tr>
+            {% for each in history %}
+                <tr>
+                    <td>
+                        {{ each[1] }}
+                    </td>
+                    <td>
+                        <input type="checkbox" name="empty" data-toggle="toggle" data-on="Restock" data-off=" " data-size="mini" value="{{ each[0] }}">
+                    </td>
+                    <td>
+                        <input type="checkbox" name="refill" data-toggle="toggle" data-on="Buy" data-off=" " data-size="mini" value="{{ each[0] }}">
+                    </td>
+                    <td>
+                        {{ each[2] }}
+                    </td>
+                </tr>
+            {% endfor %}
+    </table>
+    </div>
+</div>
+</form>
+
+{% endblock %}

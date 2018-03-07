@@ -4,71 +4,87 @@
 {% block title %}Map{% endblock %}
 {% block content %}
 
-<h1>Supermarkets open now:</h1>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-    <meta charset="utf-8">
-    <style>
-          /* Always set the map height explicitly to define the size of the div element that contains the map. */
-          #map {
-            height: 100%;
-          }
-          /* Optional: Makes the sample page fill the window. */
-          html, body {
-            height: 90%;
-            padding-top: 25px;
-          }
-    </style>
-    <script>
-      var map;
-      var infowindow;
+<!-- Guide Panel -->
+<form action="/map_refresh">
+<div id="guide" class="panel panel-default container-fluid" style="background-image: url(static/img/footer_lodyas.png); padding: 10px; background-position: center; margin-top: 30px;">
+  <div class="panel-body">
+    <div class="row">
+        <div class="col-xs-8"> 
+            Supermarkets within 1/2 mile that are open now:
+        </div>
+        <div class="col-xs-4">
+            <button type="submit" class="btn btn-primary pull-right" style="width: 160px;">Refresh</button>
+        </div>
+    </div>
+  </div>
+</div>
+</form>
 
-      function initMap() {
-        // Currently hardcoded to hbhq, want Geolocation, but need https first
-        var hbhq = {lat: 37.789, lng: -122.411};
-
-        // This creates the map
-        map = new google.maps.Map(document.getElementById('map'), {
-          center: hbhq,
-          zoom: 16
-        });
-
-        // This is accessing places library, performs the search with the parameters
-        infowindow = new google.maps.InfoWindow();
-        var service = new google.maps.places.PlacesService(map);
-        // This is my request
-        service.nearbySearch({
-          location: hbhq,
-          radius: 1000,
-          type: ['supermarket'],
-          openNow: true
-        }, callback);
+<!-- THE MAP -->
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+<meta charset="utf-8">
+<style>
+      /* Always set the map height explicitly to define the size of the div element that contains the map. */
+      #map {
+        height: 100%;
       }
-
-      function callback(results, status) {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-          for (var i = 0; i < results.length; i++) {
-            createMarker(results[i]);
-          }
-        }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 90%;
+        padding-top: 25px;
       }
+</style>
+<script>
+  var map;
+  var infowindow;
 
-      // This makes the markers
-      function createMarker(place) {
-        var placeLoc = place.geometry.location;
-        var marker = new google.maps.Marker({
-          map: map,
-          position: place.geometry.location
-        });
-        // This allows a user to click a marker and see info about the place
-        google.maps.event.addListener(marker, 'click', function() {
-          infowindow.setContent(place.name);
-          infowindow.open(map, this);
-        });
+  function initMap() {
+    // Currently hardcoded to hbhq, want Geolocation, but need https first
+    var hbhq = {lat: 37.789, lng: -122.411};
+
+    // This creates the map
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: hbhq,
+      zoom: 16
+    });
+
+    // This is accessing places library, performs the search with the parameters
+    infowindow = new google.maps.InfoWindow();
+    var service = new google.maps.places.PlacesService(map);
+    // This is my request
+    service.nearbySearch({
+      location: hbhq,
+      radius: 1000,
+      type: ['supermarket'],
+      openNow: true
+    }, callback);
+  }
+
+  function callback(results, status) {
+    if (status === google.maps.places.PlacesServiceStatus.OK) {
+      for (var i = 0; i < results.length; i++) {
+        createMarker(results[i]);
       }
-    </script>
+    }
+  }
 
-    <div id="map"></div>
-    <!-- Key passed from secrets.sh -->
-    <script src="https://maps.googleapis.com/maps/api/js?key={{my_key}}&libraries=places&callback=initMap" async defer></script>
+  // This makes the markers
+  function createMarker(place) {
+    var placeLoc = place.geometry.location;
+    var marker = new google.maps.Marker({
+      map: map,
+      position: place.geometry.location
+    });
+    // This allows a user to click a marker and see info about the place
+    google.maps.event.addListener(marker, 'click', function() {
+      infowindow.setContent(place.name);
+      infowindow.open(map, this);
+    });
+  }
+</script>
+
+<div id="map"></div>
+<!-- Key passed from secrets.sh -->
+<script src="https://maps.googleapis.com/maps/api/js?key={{my_key}}&libraries=places&callback=initMap" async defer></script>
 
 {% endblock %}

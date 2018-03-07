@@ -16,7 +16,7 @@
 
             <form action="/updatepantryitem" method="POST">
             <div class="form-inline">
-                <label>Name:&nbsp;<input type="text" class="form-control" name="name" id="nameField"></label>
+                <label>Name:&nbsp;<input style="height: 30px" type="text" class="form-control" name="name" id="nameField"></label>
             </div>
             <div class="form-inline">
                 <label>In Pantry:&nbsp;</label>
@@ -30,7 +30,7 @@
             </div>
             <div class="form-inline">
                 <label>Last Purchased:&nbsp;</label><span id="lastPurch"></span>
-                <input type="date" class="form-control" name="last_purch">
+                <input style="height: 30px" type="date" class="form-control" name="last_purch">
             </div>
             <div class="form-inline">
                 <label>Location:&nbsp;</label>
@@ -39,7 +39,7 @@
                 {% endfor %}
             </div>
             <div class="form-inline">
-                <label>Expires in:&nbsp;<input id="exp" type="number" class="form-control" name="exp">&nbsp;days</label>
+                <label>Expires in:&nbsp;<input id="exp" type="number" class="form-control" style="height: 30px" name="exp">&nbsp;days</label>
             </div>
             <div class="form-group">
                 <label>Description:&nbsp;</label>
@@ -56,8 +56,19 @@
   </div>
 </div>
 
+<!-- Guide Panel -->
+<div id="guide" class="panel panel-default container-fluid" style="background-image: url(static/img/footer_lodyas.png); padding: 10px; background-position: center;">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-8">
+                <b>Eat me:</b>&nbsp; your items with an expiration date, organized by first to expire. <br>Click items to edit.
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Eatme Panel -->
-<div class="panel panel-default">
+<div class="panel panel-default ">
     <div class="panel-heading">
         Eat me
     </div>
@@ -71,7 +82,7 @@
             {% for foodstuff in eat_me %}
             <tr>
                 <td>
-                    <a id="foodLink-{{foodstuff[0]}}" class="editFoodLink" data-toggle="modal" data-target="#foodEditModal" data-itemid="{{ foodstuff[0] }}" data-itemname="{{ foodstuff[1] }}">{{ foodstuff[1] }}</a>
+                    <a href="#foodEditModal" id="foodLink-{{foodstuff[0]}}" class="editFoodLink" data-toggle="modal" data-target="#foodEditModal" data-itemid="{{ foodstuff[0] }}" data-itemname="{{ foodstuff[1] }}">{{ foodstuff[1] }}</a>
                 </td>
                 {% if foodstuff[3] > -1 %}
                     <td class="positive">

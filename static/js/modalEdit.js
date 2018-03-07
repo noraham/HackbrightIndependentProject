@@ -102,32 +102,11 @@ $(".editFoodLink").on('click', foodEditDisplay);
 
 // listener and functions to handle FOOD form submission - update db and change view
 function updatePantryPageFood(result) {
-    // $("#flash").show()
     
-    // If pantry status changed, have to reload page
-    if(result.pantryChange != false) {
-        location.reload(true);
-    }
-
-    // if location changed, have to relaod page
-    if(result.locChange != false) {
-        location.reload(true);
-    }
-
-    // this is lazy, I should fix to use jQuery to update
-    if(result.expChange != false) {
-        location.reload(true);
-    }
-
-    // if purchase date changed, have to relaod page
-    if(result.purchChange != false) {
-        location.reload(true);
-    }
-
-    // If name changed, update on pantry page
-    if(result.nameChange != false) {
-        $("#foodLink-"+result.pantryId).html(result.nameChange);
-    }
+    // Return to this later, change so jQuery reveals a flash message
+    // Also necessitates re-working all flash handling for this route
+    // For now, just reload page
+    location.reload(true);
 }
 
 function foodUpdate(evt) {
@@ -157,25 +136,3 @@ function foodUpdate(evt) {
 }
 
 $("#foodSubmit").on('click', foodUpdate);
-
-// show and hide alert/flash messages
-// $('#foodSubmit').on('click', flashAlerts () {
-//     $.alert('Message here', {
-//         autoClose: true,
-//         closeTime: 5000,
-//     });
-// });
-
-// $('#show-alerts').slideDown(function() {
-//     setTimeout(function() {
-//         $('#alert').slideUp();
-//     }, 5000);
-// });
-
-
-
-// need to clear modal between clicks, NOT WORKING
-// $('#locEditModal').on('show.bs.modal', function () {
-//     console.log("hidden trigger");
-//     $(this).find('form')[0].reset();
-// });

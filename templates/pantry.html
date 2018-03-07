@@ -3,6 +3,7 @@
 {% block title %}Remote Pantry{% endblock %}
 {% block content %}
 
+
 <!-- Item Add Modal -->
 <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
@@ -15,7 +16,7 @@
           <div class="modal-body">
             <form action="/add_item" method="POST">
                 <div class="form-inline">
-                    <label>Name:&nbsp;<input type="text" class="form-control" name="add_name" required></label>
+                    <label>Name:&nbsp;<input type="text" style="height: 30px" ="form-control" name="add_name" required></label>
                 </div>
                 <div class="form-inline">
                     <label>Location:&nbsp;</label>
@@ -24,11 +25,35 @@
                     {% endfor %}
                 </div>
                 <div class="form-inline">
-                    <label>Expires in:&nbsp;<input id="add_exp" type="number" class="form-control" name="add_exp"> days (optional)</label>
+                    <label>Expires in:&nbsp;<input id="add_exp" style="height: 30px" type="number" class="form-control" name="add_exp"> days (optional)</label>
                 </div>
           </div>
           <div class="modal-footer">
             <button id="addSubmit" data-dismiss="modal" type="submit" class="btn btn-primary">Add</button>
+            </form>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Location Add Modal -->
+<div class="modal fade" id="addLocModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Add a New Location</h4>
+      </div>
+      <div id="locAddform">
+          <div class="modal-body">
+            <form action="/add_loc" method="POST">
+                <div class="form-inline">
+                <label>New location: <input style="height: 30px" type="text" class="form-control" name="loc" id="newLoc"></label>
+                </div>
+          </div>
+          <div class="modal-footer">
+            <button id="addLocSubmit" data-dismiss="modal" type="submit" class="btn btn-primary">Add</button>
             </form>
           </div>
       </div>
@@ -48,7 +73,7 @@
           <div class="modal-body">
             <form action="/updatelocationformhandle" method="POST">
                 <div class="form-inline">
-                    <label>Name:&nbsp;<input type="text" class="form-control" name="new_name" id="new_name"></label>
+                    <label>Name:&nbsp;<input type="text" style="height: 30px" class="form-control" name="new_name" id="new_name"></label>
                 </div>
           </div>
           <div class="modal-footer">
@@ -73,7 +98,7 @@
 
             <form action="/updatepantryitem" method="POST">
             <div class="form-inline">
-                <label>Name:&nbsp;<input type="text" class="form-control" name="name" id="nameField"></label>
+                <label>Name:&nbsp;<input type="text"  style="height: 30px"class="form-control" name="name" id="nameField"></label>
             </div>
             <div class="form-inline">
                 <label>On shopping list:&nbsp;</label>
@@ -82,7 +107,7 @@
             </div>
             <div class="form-inline">
                 <label>Last Purchased:&nbsp;</label><span id="lastPurch"></span>
-                <input type="date" class="form-control" name="last_purch">
+                <input type="date" class="form-control"  style="height: 30px"name="last_purch">
             </div>
             <div class="form-inline">
                 <label>Location:&nbsp;</label>
@@ -91,7 +116,7 @@
                 {% endfor %}
             </div>
             <div class="form-inline">
-                <label>Expires in:&nbsp;<input id="exp" type="number" class="form-control" name="exp">&nbsp;days</label>
+                <label>Expires in:&nbsp;<input id="exp"  style="height: 30px" type="number" class="form-control" name="exp">&nbsp;days</label>
             </div>
             <div class="form-group">
                 <label>Description:&nbsp;</label>
@@ -109,8 +134,26 @@
 </div>
 
 
-<!-- Pantry Panels -->
+<!-- Guide Panel -->
 <form action="update" method="POST">
+<div id="guide" class="panel panel-default container-fluid" style="background-image: url(static/img/footer_lodyas.png); padding: 10px; background-position: center;">
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-xs-6">
+            <b>Pantry display: </b>&nbsp;your items, organized by location.
+            <br>Use the Update button to submit Empties and Refills. 
+      </div>
+      <div class="col-xs-6">
+            <button type="submit" class="btn btn-primary pull-right" style="width: 160px;">Update</button>
+            <button type="button" class="btn btn-success addLoc pull-right" data-toggle="modal" data-target="#addLocModal" style="width: 160px; margin-right: 20px;"> Add a Location
+            </button>
+            
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Pantry Panel(s) -->
 {% for key, val in pantry.iteritems() %}
 <div class="panel panel-default">
     <div class="panel-heading">
@@ -118,13 +161,13 @@
         <div class="btn-group">
             <a href="/update/{{ key.location_id }}">
                 <button type="button" class="btn btn-primary locEventListener" data-toggle="modal" data-target="#locEditModal" data-locid="{{ key.location_id }}" data-locname="{{ key.location_name }}">
-                    <span id="locname-{{key.location_id}}">{{ key.location_name }}</span>
+                    <span id="locname-{{key.location_id}}">{{ key.location_name }}</span>&nbsp;&nbsp;
                     <span class="badge">{{ val|length }}</span>
                 </button>
             </a>
         </div>
         <div class="btn-group">
-            <button type="button" class="btn btn-success addModalButt" data-toggle="modal" data-target="#addModal" data-addlocid="{{ key.location_id }}">
+            <button type="button" class="btn btn-success addModalButt" data-toggle="modal" data-target="#addModal" data-addlocid="{{ key.location_id }}" style="margin-left: 10px; height: 46px;">
             <span class="glyphicon glyphicon-plus" aria-hidden="true"
             ></span>
             </button>
@@ -140,7 +183,7 @@
             {% for each in val %}
                 <tr>
                     <td>
-                        <a id="foodLink-{{each[1]}}" class="editFoodLink" data-toggle="modal" data-target="#foodEditModal" data-itemid="{{ each[1] }}" data-itemname="{{ each[0] }}">{{ each[0] }}</a>
+                        <a href="#foodEditModal" id="foodLink-{{each[1]}}" class="editFoodLink" data-toggle="modal" data-target="#foodEditModal" data-itemid="{{ each[1] }}" data-itemname="{{ each[0] }}">{{ each[0] }}</a>
                     </td>
                     <td>
                         <input type="checkbox" name="empty" data-toggle="toggle" data-on="Empty" data-off=" " data-size="mini" value="{{ each[1] }}">
@@ -154,6 +197,5 @@
     </div>
 </div>
 {% endfor %}
-    <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 {% endblock %}

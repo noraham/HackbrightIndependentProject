@@ -15,7 +15,7 @@
           <div class="modal-body">
             <form action="/add_item" method="POST">
                 <div class="form-inline">
-                    <label>Name:&nbsp;<input type="text" class="form-control" name="shop_name" required></label>
+                    <label>Name:&nbsp;<input style="height: 30px" type="text" class="form-control" name="shop_name" required></label>
                 </div>
                 <div class="form-inline">
                     <label>Location:&nbsp;</label>
@@ -24,7 +24,7 @@
                     {% endfor %}
                 </div>
                 <div class="form-inline">
-                    <label>Expires in:&nbsp;<input id="add_exp" type="number" class="form-control" name="shop_exp"> days (optional)</label>
+                    <label>Expires in:&nbsp;<input style="height: 30px" id="add_exp" type="number" class="form-control" name="shop_exp"> days (optional)</label>
                 </div>
           </div>
           <div class="modal-footer">
@@ -36,19 +36,31 @@
   </div>
 </div>
 
-<!-- Shopping List Panel -->
+<!-- Guide Panel -->
 <form action="restock" method="POST">
-<div class="panel panel-default">
-    <div class="panel-heading">
-        Shopping List &nbsp;&nbsp;<span class="badge">{{ shopping_list|length }}
-        </span>
-        <div class="btn-group">
-            <button type="button" class="btn btn-success addShop" data-toggle="modal" data-target="#shopModal">
+<div id="guide" class="panel panel-default container-fluid" style="background-image: url(static/img/footer_lodyas.png); padding: 10px; background-position: center;">
+  <div class="panel-body">
+    <div class="row">
+        <div class="col-xs-8">
+              <b>Shopping List: </b>&nbsp;toggle and Update to move item to Pantry, or toggle to remove from Shopping List.&nbsp;&nbsp; Items are ordered by Location. &nbsp;
+        </div>
+        <div class="col-xs-4">
+          <button type="submit" class="btn btn-primary pull-right" style="width: 160px;">Update</button>
+            <button type="button" class="btn btn-success addShop pull-right" data-toggle="modal" data-target="#shopModal" style="margin-right: 20px;">
             <span class="glyphicon glyphicon-plus" aria-hidden="true"
             ></span>
             </button>
         </div>
     </div>
+  </div>
+</div>
+
+<!-- Shopping List Panel -->
+<div class="panel panel-default">
+    <div class="panel-heading">
+        Shopping List:&nbsp;&nbsp; <span class="badge">{{ shopping_list|length }}</span>
+    </div>
+    <div class="panel-body">
     <table class='table table-striped table-condensed'>
         <tr>
             <th>Name</th>
@@ -70,10 +82,10 @@
                 <td>
                     <div class="form-inline">
                         {% if foodstuff.exp != None %}
-                            <input type="number" class="form-control input-sm" name="exp" placeholder="{{ foodstuff.exp }}">
+                            <input type="number" class="form-control input-sm" style="height: 25px; width: 100px;" name="exp" placeholder="{{ foodstuff.exp }}">
                             <input type="hidden" name="hidden_id" value="{{ foodstuff.pantry_id }}"/>
                         {% else %}
-                            <input type="number" class="form-control input-sm" name="exp">
+                            <input type="number" class="form-control input-sm" style="height: 25px; width: 100px;" name="exp">
                             <input type="hidden" name="hidden_id" value="{{ foodstuff.pantry_id }}"/>
                         {% endif %}
                     </div>
@@ -87,9 +99,7 @@
             </tr>
         {% endfor %}
     </table>
-</div>
-    <div class="btn-group">
-        <button type="submit" class="btn btn-primary">Submit</button>
     </div>
+</div>
 </form>
 {% endblock %}

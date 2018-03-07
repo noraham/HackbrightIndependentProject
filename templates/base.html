@@ -14,16 +14,20 @@
 
   <title>{% block title %}TITLE{% endblock %}</title>
 
-  <link rel="stylesheet" href="../static/css/bootstrap.css">
+  <link rel="stylesheet" href="../static/css/Darkly.css">
+  <!-- <link rel="stylesheet" href="../static/css/bootstrap.css"> -->
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script type="text/javascript" src="../static/js/bootstrap.js"></script>
   <!-- https://maxcdn.bootstrapcdn.com/bootswatch/4.0.0-beta.3/darkly/bootstrap.min.css -->
   <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 
+
   <style>
-    body  {padding-top: 70px;
+    body  {padding-top: 80px;
           margin-left: 10px;
-          margin-right: 10px;}
+          margin-right: 10px;
+          /*background: url("/static/img/footer_lodyas.png")*/
+          ;}
     .positive {font-weight: bold;
                color: green;}
     .negative {font-weight: bold;
@@ -55,9 +59,9 @@
       <ul class="nav navbar-nav">
         {% set active_page = active_page|default('home') -%}
         <li {% if active_page == 'pantry' %} class="active" {% endif %}><a href="/pantry">Pantry</a></li>
-        <li {% if active_page == 'add' %} class="active" {% endif %}><a href="/add">Add</a></li>
-        <li {% if active_page == 'store' %} class="active" {% endif %}><a href="/shop">@Store</a></li>
+        <!-- <li {% if active_page == 'add' %} class="active" {% endif %}><a href="/add">Add</a></li> -->
         <li {% if active_page == 'eatme' %} class="active" {% endif %}><a href="/eatme">EatMe</a></li>
+        <li {% if active_page == 'store' %} class="active" {% endif %}><a href="/shop">@Store</a></li>
         <li {% if active_page == 'map' %} class="active" {% endif %}><a href="/map">Map</a></li>
         <li {% if active_page == 'history' %} class="active" {% endif %}><a href="/history">History</a></li>
       </ul>
@@ -77,11 +81,13 @@
     {% if messages %}
       {% for category, message in messages %}
         {% if category == 'message' %}
-          <div class="alert alert-success" role="alert">
+          <div class="alert alert-success alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
           <span class="sr-only">Success:</span>
         {% else %}
-          <div class="alert alert-{{ category }}" role="alert">
+          <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
           <span class="sr-only">Error:</span>
         {% endif %}
