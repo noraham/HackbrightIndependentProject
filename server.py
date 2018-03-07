@@ -103,7 +103,7 @@ def newuser_form_handle():
 
         # Initialize 4 basic locations for a new user
         basic_locs(user.user_id)
-        return redirect('/add')
+        return redirect('/pantry')
 
     else:
         flash("There is already an account linked to this username.", 'danger')
@@ -244,6 +244,8 @@ def edit_item():
     tz = get_tz(current_user)
     ugly = (item.last_purch) + timedelta(hours=tz)
     pretty = ugly.strftime('%b %d, %Y')
+
+    print "###################", item, item.is_shopping
 
     return jsonify({"pantryId": item.pantry_id, "userId": item.user_id,
                     "itemName": item.name, "isPantry": item.is_pantry,

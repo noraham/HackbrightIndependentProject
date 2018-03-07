@@ -15,16 +15,16 @@
           <div class="modal-body">
             <form action="/add_item" method="POST">
                 <div class="form-inline">
-                    <label>Name:&nbsp;<input style="height: 30px" type="text" class="form-control" name="shop_name" required></label>
+                    <label>Name:&nbsp;&nbsp;&nbsp;<input style="height: 30px" type="text" class="form-control" name="shop_name" required></label>
                 </div>
                 <div class="form-inline">
-                    <label>Location:&nbsp;</label>
+                    <label>Location:&nbsp;&nbsp;&nbsp;</label>
                     {% for loc in user_locs %}
                         <label class="radio-inline"><input class="locshop" type="radio" name="shop_loc" value="{{ loc.location_id }}" id="locShopButt-{{loc.location_id}}">{{ loc.location_name }}</label>
                     {% endfor %}
                 </div>
                 <div class="form-inline">
-                    <label>Expires in:&nbsp;<input style="height: 30px" id="add_exp" type="number" class="form-control" name="shop_exp"> days (optional)</label>
+                    <label>Expires in:&nbsp;&nbsp;&nbsp;<input style="height: 30px" id="add_exp" type="number" class="form-control" name="shop_exp">&nbsp;&nbsp;&nbsp; days (optional)</label>
                 </div>
           </div>
           <div class="modal-footer">

@@ -50,6 +50,7 @@ $("#locSubmit").on('click', locationUpdate);
 
 // Listener and function to display FOOD form in modal
 function foodEditPrefills(results) {
+    console.log(results.isShopping);
 
     // Goes through each field in form, filling placeholder info from db
     $('#nameField').attr('placeholder', results.itemName);
