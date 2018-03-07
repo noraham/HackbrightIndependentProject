@@ -27,7 +27,9 @@
       /* Always set the map height explicitly to define the size of the div element that contains the map. */
       #map {
         height: 100%;
+        color: black;
       }
+      #map a {color: blue;}
       /* Optional: Makes the sample page fill the window. */
       html, body {
         height: 90%;
@@ -70,6 +72,7 @@
 
   // This makes the markers
   function createMarker(place) {
+    console.log(place);
     var placeLoc = place.geometry.location;
     var marker = new google.maps.Marker({
       map: map,
@@ -77,7 +80,10 @@
     });
     // This allows a user to click a marker and see info about the place
     google.maps.event.addListener(marker, 'click', function() {
-      infowindow.setContent(place.name);
+      var name = place.name;
+      var placeid = place.place_id;
+      var html = name + "</br><a target='_blank' href='www.google.com/maps/place/?q=place_id:" + placeid + "'> <span>View on Google Maps</span> </a>";
+      infowindow.setContent(html);
       infowindow.open(map, this);
     });
   }
