@@ -392,10 +392,10 @@ def map_display():
     """Display google map, displays type 'supermarket' within 1000m, open now"""
 
     # Uses secrets.sh to get google map key
-    my_key = os.environ['GPLACES_KEY']
+    # my_key = os.environ['GPLACES_KEY']
     # remember to run source secrets.sh in terminal before running this file!
 
-    return render_template("map.html", my_key=my_key)
+    return render_template("map.html")
 
 @app.route('/history')
 @login_required
