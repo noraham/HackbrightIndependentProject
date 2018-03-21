@@ -438,6 +438,9 @@ if __name__ == "__main__":
     connect_to_db(app)
 
     # Use the DebugToolbar
-    DebugToolbarExtension(app)
+    #DebugToolbarExtension(app)
 
+    """NORA, DONT YOU DARE FORGET TO SWITCH THIS BACK AND PUSH THIS VERSION TO
+       GITHUB AND BREAK YOUR SERVER!!!!"""
     app.run()
+    # app.run(port=5000, host='0.0.0.0')
