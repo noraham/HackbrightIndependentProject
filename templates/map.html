@@ -41,7 +41,7 @@
 
   function initMap() {
     // Currently hardcoded to hbhq, want Geolocation, but need https first
-    var hbhq = {lat: 37.737914, lng: -122.419443};
+    var hbhq = {lat: 37.788880, lng: -122.411493};
 
     // This creates the map
     map = new google.maps.Map(document.getElementById('map'), {
@@ -58,8 +58,6 @@
           lat: position.coords.latitude,
           lng: position.coords.longitude
         };
-        console.log(pos)
-
         infoWindow.setPosition(pos);
         infoWindow.setContent('Location found.');
         infoWindow.open(map);
@@ -79,8 +77,6 @@
                           'Error: The Geolocation service failed.' :
                           'Error: Your browser doesn\'t support geolocation.');
     infoWindow.open(map);
-  }
-
 
     // This is accessing places library, performs the search with the parameters
     var service = new google.maps.places.PlacesService(map);
@@ -91,7 +87,7 @@
       type: ['supermarket'],
       // openNow: true
     }, callback);
-    
+  }
 
   function callback(results, status) {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
@@ -114,8 +110,8 @@
       var name = place.name;
       var placeid = place.place_id;
       var html = name + "</br><a target='_blank' href='www.google.com/maps/place/?q=place_id:" + placeid + "'> <span>View on Google Maps</span> </a>";
-      infowindow.setContent(html);
-      infowindow.open(map, this);
+      infoWindow.setContent(html);
+      infoWindow.open(map, this);
     });
   }
 </script>
