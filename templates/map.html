@@ -41,7 +41,7 @@
 
   function initMap() {
     // Currently hardcoded to hbhq, want Geolocation, but need https first
-    var hbhq = {lat: 37.789, lng: -122.411};
+    var hbhq = {lat: 37.737914, lng: -122.419443};
 
     // This creates the map
     map = new google.maps.Map(document.getElementById('map'), {
@@ -82,42 +82,42 @@
   }
 
 
-  //   // This is accessing places library, performs the search with the parameters
-  //   var service = new google.maps.places.PlacesService(map);
-  //   // This is my request
-  //   service.nearbySearch({
-  //     location: pos,
-  //     radius: 1000,
-  //     type: ['supermarket'],
-  //     openNow: true
-  //   }, callback);
-  // }
+    // This is accessing places library, performs the search with the parameters
+    var service = new google.maps.places.PlacesService(map);
+    // This is my request
+    service.nearbySearch({
+      location: pos,
+      radius: 1000,
+      type: ['supermarket'],
+      // openNow: true
+    }, callback);
+    
 
-  // function callback(results, status) {
-  //   if (status === google.maps.places.PlacesServiceStatus.OK) {
-  //     for (var i = 0; i < results.length; i++) {
-  //       createMarker(results[i]);
-  //     }
-  //   }
-  // }
+  function callback(results, status) {
+    if (status === google.maps.places.PlacesServiceStatus.OK) {
+      for (var i = 0; i < results.length; i++) {
+        createMarker(results[i]);
+      }
+    }
+  }
 
-  // // This makes the markers
-  // function createMarker(place) {
-  //   console.log(place);
-  //   var placeLoc = place.geometry.location;
-  //   var marker = new google.maps.Marker({
-  //     map: map,
-  //     position: place.geometry.location
-  //   });
-  //   // This allows a user to click a marker and see info about the place
-  //   google.maps.event.addListener(marker, 'click', function() {
-  //     var name = place.name;
-  //     var placeid = place.place_id;
-  //     var html = name + "</br><a target='_blank' href='www.google.com/maps/place/?q=place_id:" + placeid + "'> <span>View on Google Maps</span> </a>";
-  //     infowindow.setContent(html);
-  //     infowindow.open(map, this);
-  //   });
-  // }
+  // This makes the markers
+  function createMarker(place) {
+    console.log(place);
+    var placeLoc = place.geometry.location;
+    var marker = new google.maps.Marker({
+      map: map,
+      position: place.geometry.location
+    });
+    // This allows a user to click a marker and see info about the place
+    google.maps.event.addListener(marker, 'click', function() {
+      var name = place.name;
+      var placeid = place.place_id;
+      var html = name + "</br><a target='_blank' href='www.google.com/maps/place/?q=place_id:" + placeid + "'> <span>View on Google Maps</span> </a>";
+      infowindow.setContent(html);
+      infowindow.open(map, this);
+    });
+  }
 </script>
 
 <div id="map"></div>
