@@ -59,6 +59,7 @@
           lng: position.coords.longitude
         };
         map.setCenter(pos);
+        console.log(pos)
       }, function() {
         handleLocationError(true, infoWindow, map.getCenter());
       });
@@ -74,7 +75,7 @@
           strokeColor: 'gold',
           strokeWeight: 3};
       var marker = new google.maps.Marker({
-          position: pos,
+          position: hbhq,
           icon: goldStar,
           animation: google.maps.Animation.DROP,
           map: map
@@ -113,6 +114,7 @@
     var marker = new google.maps.Marker({
       map: map,
       position: place.geometry.location
+      console.log("I'm in the marker function")
     });
     // This allows a user to click a marker and see info about the place
     google.maps.event.addListener(marker, 'click', function() {
