@@ -41,11 +41,11 @@
 
   function initMap() {
     // Currently hardcoded to hbhq, want Geolocation, but need https first
-    // var hbhq = {lat: 37.789, lng: -122.411};
+    var hbhq = {lat: 37.789, lng: -122.411};
 
     // This creates the map
     map = new google.maps.Map(document.getElementById('map'), {
-      center: {lat: -34.397, lng: 150.644},
+      center: hbhq,
       zoom: 16
     });
     infoWindow = new google.maps.InfoWindow();
@@ -61,6 +61,7 @@
           lat: position.coords.latitude,
           lng: position.coords.longitude
         };
+        console.log(pos)
 
         infoWindow.setPosition(pos);
         infoWindow.setContent('Location found.');
