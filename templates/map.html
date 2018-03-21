@@ -75,7 +75,7 @@
           strokeColor: 'gold',
           strokeWeight: 3};
       var marker = new google.maps.Marker({
-          position: pos,
+          position: hbhq,
           icon: goldStar,
           animation: google.maps.Animation.DROP,
           map: map
@@ -84,7 +84,7 @@
     var service = new google.maps.places.PlacesService(map);
     // This is my request
     service.nearbySearch({
-      location: pos,
+      location: hbhq,
       radius: 1000,
       type: ['supermarket'],
       openNow: true
