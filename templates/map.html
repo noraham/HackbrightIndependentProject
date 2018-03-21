@@ -109,12 +109,12 @@
   }
 
   // This makes the markers
-  function createMarker(place) {
+  function createMarker(place) {     
+    console.log("I'm in the marker function")
     var placeLoc = place.geometry.location;
     var marker = new google.maps.Marker({
       map: map,
       position: place.geometry.location
-      console.log("I'm in the marker function")
     });
     // This allows a user to click a marker and see info about the place
     google.maps.event.addListener(marker, 'click', function() {
