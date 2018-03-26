@@ -37,7 +37,7 @@
       }
 </style>
 <script>
-  var map, infoWindow, pos, goldstar, starMarker, mapSettings, userLoc;
+  var map, infoWindow, pos, goldstar, starMarker, mapSettings, userLoc, service;
 
   // var map, infoWindow, pos, hbhq, goldstar, starMarker, service, mapSettings, userLoc;
 
@@ -85,15 +85,15 @@
   //         map: map
   //       });
 
-  //   // This is accessing places library, performs the search with the parameters
-  //   service = new google.maps.places.PlacesService(map);
-  //   // This is my request
-  //   service.nearbySearch({
-  //     location: hbhq,
-  //     radius: 1000,
-  //     type: ['supermarket'],
-  //     openNow: true
-  //   }, callback);
+    // // This is accessing places library, performs the search with the parameters
+    // service = new google.maps.places.PlacesService(map);
+    // // This is my request
+    // service.nearbySearch({
+    //   location: hbhq,
+    //   radius: 1000,
+    //   type: ['supermarket'],
+    //   openNow: true
+    // }, callback);
   //   }
 
   // function handleLocationError(browserHasGeolocation, infoWindow, pos) {
@@ -131,14 +131,19 @@
   //   });
   // }
 
+  // if we can geolocate, put that position into userLoc and build a map and marker around it
   function locSuccess(position) {
+    // assigning position coordinates
     userLoc = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+    // required settings
     mapSettings = {
       center: userLoc,
       zoom: 16
     };
+    // builds the map in the groceryMap div
     map = new google.maps.Map(document.getElementById('groceryMap'),mapSettings);
     infoWindow = new google.maps.InfoWindow();
+    // custom shape to represent location marker
     goldStar = {
       path: 'M 125,5 155,90 245,90 175,145 200,230 125,180 50,230 75,145 5,90 95,90 z',
       fillColor: 'yellow',
@@ -147,11 +152,49 @@
       strokeColor: 'gold',
       strokeWeight: 3
     };
+    // marker for user location
     starMarker = new google.maps.Marker({
       position: userLoc,
       icon: goldStar,
       animation: google.maps.Animation.DROP,
       map: map
+    });
+    // This is accessing places library, performs the search with the parameters
+    service = new google.maps.places.PlacesService(map);
+    // This is my request
+    service.nearbySearch({
+      location: userLoc,
+      radius: 1000,
+      type: ['supermarket'],
+      openNow: true
+    }, placeCallback);
+  }
+
+  // takes results from places library search, runs each through createMarker function
+  function placeCallback(results, status) {
+    console.log("I'm in the callback function!")
+    if (status === google.maps.places.PlacesServiceStatus.OK) {
+      for (var i = 0; i < results.length; i++) {
+        createMarker(results[i]);
+      }
+    }
+  }
+
+  // this makes the grocery markers from the result list from places library search
+  function createMarker(place) {     
+    console.log("I'm in the marker function!")
+    var placeLoc = place.geometry.location;
+    var marker = new google.maps.Marker({
+      map: map,
+      position: place.geometry.location
+    });
+    // This allows a user to click a marker and see info about the place
+    google.maps.event.addListener(marker, 'click', function() {
+      var name = place.name;
+      var placeid = place.place_id;
+      var html = name + "</br><a target='_blank' href='www.google.com/maps/place/?q=place_id:" + placeid + "'> <span>View on Google Maps</span> </a>";
+      infoWindow.setContent(html);
+      infoWindow.open(map, this);
     });
   }
 
@@ -159,6 +202,7 @@
     console.log("error2");
   }
 
+  // Map loading starts here, this is the first function called
   function locateUser() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(locSuccess, locError);
