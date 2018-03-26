@@ -168,12 +168,12 @@
     }
   }
 
-  window.onload = locateUser;
+  // window.onload = locateUser;
 </script>
 
 <div id="groceryMap"></div>
 
 <!-- Key passed from secrets.sh -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBDGafwscE8zhZ3hghX6sx4e2y-mEnnPMQ&libraries=places" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBDGafwscE8zhZ3hghX6sx4e2y-mEnnPMQ&libraries=places&callback=locateUser" async defer></script>
 
 {% endblock %}
