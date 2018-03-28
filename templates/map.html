@@ -41,7 +41,7 @@
   var map, infoWindow, pos, hbhq, goldstar, starMarker, service, mapSettings, userLoc;
 
 // location object, will use as default position if it can't locate user
-hbhq = {latitude: 37.788880, longitude: -122.411493};
+hbhq = {lat: 37.788880, lng: -122.411493};
 
   // if we can geolocate, put that position into userLoc and build a map and marker around it
   function locSuccess(position) {
@@ -134,7 +134,7 @@ hbhq = {latitude: 37.788880, longitude: -122.411493};
     service = new google.maps.places.PlacesService(map);
     // This is my request
     service.nearbySearch({
-      location: userLoc,
+      location: hbhq,
       radius: 1000,
       keyword: 'grocery',
       openNow: true
