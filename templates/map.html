@@ -37,99 +37,11 @@
       }
 </style>
 <script>
-  var map, infoWindow, pos, goldstar, starMarker, mapSettings, userLoc, service;
 
-  // var map, infoWindow, pos, hbhq, goldstar, starMarker, service, mapSettings, userLoc;
+  var map, infoWindow, pos, hbhq, goldstar, starMarker, service, mapSettings, userLoc;
 
-  // function initMap() {
-  //   // Currently hardcoded to hbhq, want Geolocation, but need https first
-  //   hbhq = {lat: 37.788880, lng: -122.411493};
-
-  //   mapSettings = {
-  //     center: hbhq,
-  //     zoom: 16
-  //   };
-
-  //   // This creates the map
-  //   map = new google.maps.Map(document.getElementById('groceryMap'),mapSettings);
-  //   infoWindow = new google.maps.InfoWindow();
-
-
-  //   // Try HTML5 geolocation.
-  //   if (navigator.geolocation) {
-  //     navigator.geolocation.getCurrentPosition(function(position) {
-  //       pos = {
-  //         lat: position.coords.latitude,
-  //         lng: position.coords.longitude
-  //       };
-  //       map.setCenter(pos);
-  //       console.log(pos)
-  //     }, function() {
-  //       handleLocationError(true, infoWindow, map.getCenter());
-  //     });
-  //     } else {
-  //       // Browser doesn't support Geolocation
-  //       handleLocationError(false, infoWindow, map.getCenter());
-  //     }
-  //     goldStar = {
-  //         path: 'M 125,5 155,90 245,90 175,145 200,230 125,180 50,230 75,145 5,90 95,90 z',
-  //         fillColor: 'yellow',
-  //         fillOpacity: 0.8,
-  //         scale: 0.15,
-  //         strokeColor: 'gold',
-  //         strokeWeight: 3};
-  //     starMarker = new google.maps.Marker({
-  //         position: userLoc,
-  //         icon: goldStar,
-  //         animation: google.maps.Animation.DROP,
-  //         map: map
-  //       });
-
-    // // This is accessing places library, performs the search with the parameters
-    // service = new google.maps.places.PlacesService(map);
-    // // This is my request
-    // service.nearbySearch({
-    //   location: hbhq,
-    //   radius: 1000,
-    //   type: ['supermarket'],
-    //   openNow: true
-    // }, callback);
-  //   }
-
-  // function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-  //   infoWindow.setPosition(pos);
-  //   infoWindow.setContent(browserHasGeolocation ?
-  //                         'Error: The Geolocation service failed.' :
-  //                         'Error: Your browser doesn\'t support geolocation.');
-  //   infoWindow.open(map);
-  // }
-
-  // function callback(results, status) {
-  //   console.log("I'm in the callback function!")
-  //   if (status === google.maps.places.PlacesServiceStatus.OK) {
-  //     for (var i = 0; i < results.length; i++) {
-  //       createMarker(results[i]);
-  //     }
-  //   }
-  // }
-
-  // // This makes the markers
-  // function createMarker(place) {     
-  //   console.log("I'm in the marker function")
-  //   var placeLoc = place.geometry.location;
-  //   var marker = new google.maps.Marker({
-  //     map: map,
-  //     position: place.geometry.location
-  //   });
-  //   // This allows a user to click a marker and see info about the place
-  //   google.maps.event.addListener(marker, 'click', function() {
-  //     var name = place.name;
-  //     var placeid = place.place_id;
-  //     var html = name + "</br><a target='_blank' href='www.google.com/maps/place/?q=place_id:" + placeid + "'> <span>View on Google Maps</span> </a>";
-  //     infoWindow.setContent(html);
-  //     infoWindow.open(map, this);
-  //   });
-  // }
+// location object, will use as default position if it can't locate user
+hbhq = {lat: 37.788880, lng: -122.411493};
 
   // if we can geolocate, put that position into userLoc and build a map and marker around it
   function locSuccess(position) {
@@ -192,14 +104,24 @@
     google.maps.event.addListener(marker, 'click', function() {
       var name = place.name;
       var placeid = place.place_id;
-      var html = name + "</br><a target='_blank' href='www.google.com/maps/place/?q=place_id:" + placeid + "'> <span>View on Google Maps</span> </a>";
+      var html = name + "</br><a target='_blank' href='http://www.google.com/maps/place/?q=place_id:" + placeid + "'> <span>View on Google Maps</span> </a>";
       infoWindow.setContent(html);
       infoWindow.open(map, this);
     });
   }
 
+  // handles geolocation errors, used hbhq as default, builds map around it
+  function handleLocationError(browserHasGeolocation, infoWindow, pos=hbhq) {
+    infoWindow.setPosition(pos);
+    infoWindow.setContent(browserHasGeolocation ?
+                          'Error: The Geolocation service failed.' :
+                          'Error: Your browser doesn\'t support geolocation.');
+    infoWindow.open(map);
+  }
+
   function locError(positionError) {
     console.log("error2");
+    handleLocationError(false, infoWindow, map.getCenter());
   }
 
   // Map loading starts here, this is the first function called
@@ -209,6 +131,7 @@
     } else {
         // Browser doesn't support Geolocation
         console.log("error");
+        handleLocationError(false, infoWindow, map.getCenter());
     }
   }
 
