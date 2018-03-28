@@ -121,7 +121,7 @@ hbhq = {lat: 37.788880, lng: -122.411493};
 
   function locError(positionError) {
     console.log("error2");
-    handleLocationError(false, infoWindow, map.getCenter());
+    handleLocationError(false, infoWindow, hbhq);
   }
 
   // Map loading starts here, this is the first function called
@@ -131,7 +131,7 @@ hbhq = {lat: 37.788880, lng: -122.411493};
     } else {
         // Browser doesn't support Geolocation
         console.log("error");
-        handleLocationError(false, infoWindow, map.getCenter());
+        handleLocationError(false, infoWindow, hbhq);
     }
   }
 
