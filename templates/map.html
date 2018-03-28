@@ -46,6 +46,7 @@ hbhq = {lat: 37.788880, lng: -122.411493};
   // if we can geolocate, put that position into userLoc and build a map and marker around it
   function locSuccess(position) {
     // assigning position coordinates
+    console.log(position)
     userLoc = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
     // required settings
     mapSettings = {
