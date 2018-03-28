@@ -122,7 +122,7 @@ hbhq = {lat: 37.788880, lng: -122.411493};
   }
 
   // if user blocks geoloc, give them map around default center
-  function locError(positionError) {
+  function locError(positionError=0) {
     console.log("error2");
     mapSettings = {
       center: hbhq,
@@ -131,6 +131,10 @@ hbhq = {lat: 37.788880, lng: -122.411493};
     // builds the map in the groceryMap div
     map = new google.maps.Map(document.getElementById('groceryMap'),mapSettings);
     infowindow = new google.maps.InfoWindow();
+    infoWindow.setPosition(hbhq);
+    infoWindow.setContent('Error: The Geolocation service failed.');
+    infoWindow.open(map);
+    
     service = new google.maps.places.PlacesService(map);
     // This is my request
     service.nearbySearch({
@@ -148,7 +152,7 @@ hbhq = {lat: 37.788880, lng: -122.411493};
     } else {
         // Browser doesn't support Geolocation
         console.log("error");
-        handleLocationError(false, infoWindow, hbhq);
+        locError;
     }
   }
 
