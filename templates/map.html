@@ -47,6 +47,7 @@ hbhq = {latitude: 37.788880, longitude: -122.411493};
   function locSuccess(position) {
     // assigning position coordinates
     console.log(position)
+    console.log(typeof position)
     userLoc = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
     // required settings
     mapSettings = {
