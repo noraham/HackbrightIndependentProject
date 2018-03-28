@@ -130,11 +130,12 @@ hbhq = {lat: 37.788880, lng: -122.411493};
     };
     // builds the map in the groceryMap div
     map = new google.maps.Map(document.getElementById('groceryMap'),mapSettings);
-    infowindow = new google.maps.InfoWindow();
+    infoWindow = new google.maps.InfoWindow();
+
     infoWindow.setPosition(hbhq);
     infoWindow.setContent('Error: The Geolocation service failed.');
     infoWindow.open(map);
-    
+
     service = new google.maps.places.PlacesService(map);
     // This is my request
     service.nearbySearch({
