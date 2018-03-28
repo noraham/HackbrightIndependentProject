@@ -44,7 +44,7 @@
 hbhq = {lat: 37.788880, lng: -122.411493};
 
   // if we can geolocate, put that position into userLoc and build a map and marker around it
-  function locSuccess(position=hbhq) {
+  function locSuccess(position) {
     // assigning position coordinates
     userLoc = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
     // required settings
@@ -121,13 +121,13 @@ hbhq = {lat: 37.788880, lng: -122.411493};
 
   function locError(positionError) {
     console.log("error2");
-    handleLocationError(false, infoWindow, hbhq);
+    locSuccess(hbhq);
   }
 
   // Map loading starts here, this is the first function called
   function locateUser() {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(locSuccess);
+      navigator.geolocation.getCurrentPosition(locSuccess, locError);
     } else {
         // Browser doesn't support Geolocation
         console.log("error");
