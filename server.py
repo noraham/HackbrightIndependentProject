@@ -459,14 +459,14 @@ def call_yelp():
     lat = float(lat)
     lon = float(lon)
 
-    # call yelp API
+    # call yelp API using requests
     api_key = os.environ['YELP_KEY']
     payload = {'latitude': lat, 'longitude': lon}
     headers = {'Authorization': 'Bearer %s' % api_key}
     url = "https://api.yelp.com/v3/transactions/delivery/search"
     req = requests.get(url, params=payload, headers=headers)
 
-    # convert response to dictionary, create new dict to pass to frontend
+    # convert response to dictionary, create new structure to pass to frontend
     req_dict = json.loads(req.text)
     pass_lst = []
     for resto in req_dict['businesses']:

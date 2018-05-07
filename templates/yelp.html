@@ -24,7 +24,6 @@
 <script>
 
     function displayRestos(result) {
-        console.log(result.yelpList[0]);
         var i = 0;
         while (result.yelpList.length > i) {
             var row = document.getElementById("table").insertRow(-1)
@@ -37,8 +36,6 @@
 
     // if we can geolocate, put that position into userLoc and pass it to server to call API
     function locSuccess(position) {
-        console.log("loc success");
-        console.log(position.coords.latitude, position.coords.longitude);
         let userLoc = {
             "lat": position.coords.latitude,
             "lon": position.coords.longitude
@@ -48,7 +45,6 @@
 
     // if user blocks geoloc, give them error message
     function locError(positionError=0) {
-        console.log("loc error");
         document.getElementById("table").insertRow(0).insertCell(0).innerHTML = "Error: you must enable geolocation to use this service.";
         let userLoc = {
             "lat": 37.788880,
@@ -59,7 +55,6 @@
 
     // Map loading starts here, this is the first function called
     window.onload = function locateUser() {
-        console.log("in loc user");
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(locSuccess, locError);
         } else {
