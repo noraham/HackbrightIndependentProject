@@ -9,6 +9,8 @@ from functools import wraps
 from flask_debugtoolbar import DebugToolbarExtension
 from jinja2 import StrictUndefined
 import os
+import requests
+import json
 
 from pantry_functions import (login_required, get_user_by_uname, is_pword,
                               hash_it, basic_locs, get_locs, eatme_generator,
@@ -429,6 +431,49 @@ def reload_map():
     """Allows user to re-call googlimoops api"""
     return redirect('/map')
 
+@app.route('/yelp')
+@login_required
+def yelp_search():
+    """Display list of restaurants nearby for takeout"""
+
+    # Uses secrets.sh to get API key
+    # my_key = os.environ['YELP_KEY']
+    # remember to run source secrets.sh in terminal before running this file!
+
+    return render_template("yelp.html")
+
+@app.route('/list_refresh')
+@login_required
+def reload_list():
+    """Allows user to re-call yelp api"""
+    return redirect('/yelp')
+
+@app.route('/callyelp', methods=["POST"])
+@login_required
+def call_yelp():
+    """takes userLoc from frontend, uses it to make request to Yelp API"""
+
+    # Grab from form
+    lat = request.form.get("lat")
+    lon = request.form.get("lon")
+
+    # call yelp API
+    api_key = os.environ['YELP_KEY']
+    payload = {'latitude': lat, 'longitude': lon}
+    headers = {'Authorization': 'Bearer %s' % api_key}
+    url = "https://api.yelp.com/v3/transactions/delivery/search"
+    req = requests.get(url, params=payload, headers=headers)
+
+    # convert response to dictionary, create new dict to pass to frontend
+    req_dict = json.loads(req.text)
+    pass_lst = []
+    for resto in req_dict['businesses']:
+        pass_lst.append(resto['name'])
+        pass_lst.append(resto['url'])
+        pass_lst.append(resto['rating'])
+        pass_lst.append(resto['categories'][0]['title'])
+
+    return jsonify({'yelpList': pass_lst})
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
@@ -440,5 +485,5 @@ if __name__ == "__main__":
     # Use the DebugToolbar
     #DebugToolbarExtension(app)
 
-    app.run()
-    # app.run(port=5000, host='0.0.0.0')
+    # app.run()
+    app.run(port=5000, host='0.0.0.0')

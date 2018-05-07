@@ -1,0 +1,80 @@
+<!-- Remember to run secrets.sh in terminal before trying to access this page!! -->
+{% extends 'base.html' %}
+{% set active_page = "to" %}rm
+{% block title %}Take-out{% endblock %}
+{% block content %}
+
+<!-- Guide Panel -->
+<form action="/list_refresh">
+<div id="guide" class="panel panel-default container-fluid" style="background-image: url(static/img/footer_lodyas.png); padding: 10px; background-position: center; margin-top: 30px;">
+  <div class="panel-body">
+    <div class="row">
+        <div class="col-xs-8"> 
+            Restaurants that are available for digital orders via Yelp:
+        </div>
+        <div class="col-xs-4">
+            <button type="submit" class="btn btn-primary pull-right" style="width: 160px;">Refresh</button>
+        </div>
+    </div>
+  </div>
+</div>
+</form>
+
+<!-- Geolocate user -->
+<script>
+
+    function displayRestos(result) {
+        console.log(result.yelpList[0]);
+        // var len = (result.yelpList.length) / 4
+        // console.log(len);
+        var i = 0;
+        while (result.yelpList.length > i) {
+            var row = document.getElementById("table").insertRow(-1)
+            var cell1 = row.insertCell(0).innerHTML = result.yelpList[i].link(result.yelpList[i+1]);
+            var cell2 = row.insertCell(1).innerHTML = result.yelpList[i+2];
+            var cell3 = row.insertCell(2).innerHTML = result.yelpList[i+3];
+            i = i + 4
+        }
+    }
+
+    // if we can geolocate, put that position into userLoc and pass it to server to call API
+    function locSuccess(position) {
+        let userLoc = {
+            "lat": position.coords.latitude,
+            "lon": position.coords.longitude
+        }
+        $.post("/callyelp", userLoc, displayRestos)
+    }
+
+    // if user blocks geoloc, give them error message
+    function locError(positionError=0) {
+        document.getElementById("table").insertRow(0).insertCell(0).innerHTML = "Error: you must enable geolocation to use this service.";
+        let userLoc = {
+            "lat": 37.788880,
+            "lon": -122.411493
+        }
+        $.post("/callyelp", userLoc, displayRestos)
+    }
+
+    // Map loading starts here, this is the first function called
+    window.onload = function locateUser() {
+        console.log("in loc user");
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(locSuccess, locError);
+        } else {
+            // Browser doesn't support Geolocation
+            locError;
+        }
+    }
+
+</script>
+
+<!-- List -->
+<div class="panel panel-default ">
+    <div class="panel-body">
+        <table class='table table-striped' id='table'>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
