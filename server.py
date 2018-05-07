@@ -454,8 +454,8 @@ def call_yelp():
     """takes userLoc from frontend, uses it to make request to Yelp API"""
 
     # Grab from form
-    lat = request.form.get("lat")
-    lon = request.form.get("lon")
+    float(lat) = request.form.get("lat")
+    float(lon) = request.form.get("lon")
 
     # call yelp API
     api_key = os.environ['YELP_KEY']
