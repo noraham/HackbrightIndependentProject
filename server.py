@@ -448,7 +448,7 @@ def reload_list():
     """Allows user to re-call yelp api"""
     return redirect('/yelp')
 
-@app.route('/callyelp')
+@app.route('/callyelp', methods=["POST"])
 @login_required
 def call_yelp():
     """takes userLoc from frontend, uses it to make request to Yelp API"""
