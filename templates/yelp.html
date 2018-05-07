@@ -39,7 +39,6 @@
     function locSuccess(position) {
         console.log("loc success");
         console.log(position.coords.latitude, position.coords.longitude);
-
         let userLoc = {
             "lat": position.coords.latitude,
             "lon": position.coords.longitude
@@ -61,7 +60,6 @@
     // Map loading starts here, this is the first function called
     window.onload = function locateUser() {
         console.log("in loc user");
-        console.log(position.coords.latitude, position.coords.longitude);
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(locSuccess, locError);
         } else {
